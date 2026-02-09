@@ -1,0 +1,340 @@
+﻿<Window
+    x:Class="Harjoitustyö.Uusi_Lasku"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Harjoitustyö"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:sys="clr-namespace:System;assembly=mscorlib"
+    Title="Rakennus Oy - Uusi Lasku"
+    Width="900"
+    Height="600"
+    MinWidth="800"
+    MinHeight="500"
+    Background="GhostWhite"
+    mc:Ignorable="d">
+
+    <Window.Resources>
+        <Style TargetType="Button">
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Margin" Value="5" />
+            <Setter Property="Padding" Value="15,5" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border
+                            Padding="{TemplateBinding Padding}"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="1"
+                            CornerRadius="6">
+                            <ContentPresenter
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                TextElement.FontWeight="SemiBold" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style TargetType="GroupBox">
+            <Setter Property="Margin" Value="5" />
+            <Setter Property="Padding" Value="10" />
+            <Setter Property="BorderBrush" Value="LightGray" />
+            <Setter Property="Background" Value="White" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+    </Window.Resources>
+
+    <Grid ShowGridLines="False">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <TextBlock
+            Grid.Row="0"
+            Margin="5"
+            FontSize="26"
+            FontWeight="Light"
+            Foreground="DimGray"
+            Text="Uusi lasku" />
+
+        <WrapPanel
+            Grid.Row="1"
+            Margin="15,0,15,10"
+            Orientation="Horizontal">
+
+            <GroupBox Header="Laskun numero">
+                <TextBox
+                    MinWidth="100"
+                    Padding="5"
+                    VerticalContentAlignment="Center"
+                    Background="WhiteSmoke"
+                    BorderThickness="0"
+                    FontWeight="Bold"
+                    IsReadOnly="True"
+                    Text="{Binding LaskunNumero, Mode=OneWay}" />
+            </GroupBox>
+
+            <GroupBox Header="Päiväys">
+                <DatePicker VerticalContentAlignment="Center" SelectedDate="{Binding Päiväys}" />
+            </GroupBox>
+
+            <GroupBox Header="Eräpäivä">
+                <DatePicker VerticalContentAlignment="Center" SelectedDate="{Binding Eräpäivä}" />
+            </GroupBox>
+
+            <GroupBox Header="Viivakoodi">
+                <Image
+                    x:Name="BarcodeImage"
+                    Width="200"
+                    Height="25"
+                    Stretch="UniformToFill" />
+            </GroupBox>
+        </WrapPanel>
+
+        <Grid Grid.Row="2" Margin="15,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <GroupBox MinWidth="250" Header="Laskuttaja">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <Label Content="Nimi:" Foreground="Gray" />
+                    <TextBlock
+                        Grid.Column="1"
+                        Margin="0,5"
+                        FontWeight="Bold"
+                        Text="{Binding LaskuttajaInfo.Nimi}" />
+
+                    <Label
+                        Grid.Row="1"
+                        Content="Osoite:"
+                        Foreground="Gray" />
+                    <TextBlock
+                        Grid.Row="1"
+                        Grid.Column="1"
+                        Margin="0,5"
+                        Text="{Binding LaskuttajaInfo.Osoite}" />
+
+                    <Label
+                        Grid.Row="2"
+                        Content="Postinumero:"
+                        Foreground="Gray" />
+                    <TextBlock
+                        Grid.Row="2"
+                        Grid.Column="1"
+                        Margin="0,5"
+                        Text="{Binding LaskuttajaInfo.Postinumero}" />
+                </Grid>
+            </GroupBox>
+
+            <GroupBox
+                Grid.Column="1"
+                MinWidth="250"
+                Header="Asiakas">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <Label Content="Nimi:" />
+                    <TextBox
+                        Grid.Column="1"
+                        Margin="0,2"
+                        Padding="4"
+                        MaxLength="30"
+                        Text="{Binding AsiakasInfo.Nimi, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" />
+
+                    <Label Grid.Row="1" Content="Osoite:" />
+                    <TextBox
+                        Grid.Row="1"
+                        Grid.Column="1"
+                        Margin="0,2"
+                        Padding="4"
+                        MaxLength="20"
+                        Text="{Binding AsiakasInfo.Osoite, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" />
+
+                    <Label Grid.Row="2" Content="Postinumero:" />
+                    <TextBox
+                        Grid.Row="2"
+                        Grid.Column="1"
+                        Margin="0,2"
+                        Padding="4"
+                        MaxLength="20"
+                        Text="{Binding AsiakasInfo.Postinumero, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" />
+                </Grid>
+            </GroupBox>
+            <GroupBox
+                Grid.Column="2"
+                MinWidth="250"
+                MaxWidth="250"
+                Header="Lisätiedot">
+                <TextBox
+                    Height="80"
+                    AcceptsReturn="True"
+                    MaxLength="100"
+                    Text="{Binding AsiakasInfo.Lisätiedot, UpdateSourceTrigger=PropertyChanged}"
+                    TextWrapping="Wrap"
+                    VerticalScrollBarVisibility="Auto" />
+            </GroupBox>
+        </Grid>
+
+        <GroupBox
+            Grid.Row="3"
+            Margin="15,10"
+            Header="Laskurivit">
+            <DataGrid
+                AlternatingRowBackground="Beige"
+                AutoGenerateColumns="False"
+                Background="White"
+                CanUserAddRows="True"
+                Foreground="Black"
+                HorizontalGridLinesBrush="Black"
+                ItemsSource="{Binding Tuotteet}"
+                RowEditEnding="DataGrid_RowEditEnding">
+
+                <DataGrid.Resources>
+                    <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="LightGray" />
+                    <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="LightGray" />
+                    <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="Black" />
+                    <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightTextBrushKey}" Color="Black" />
+
+                    <x:Array x:Key="UnitList" Type="sys:String">
+                        <sys:String>Kappale</sys:String>
+                        <sys:String>Kilogramma</sys:String>
+                        <sys:String>Metri</sys:String>
+                        <sys:String>Neliömetri</sys:String>
+                        <sys:String>Litra</sys:String>
+                        <sys:String>Tunti</sys:String>
+                    </x:Array>
+                </DataGrid.Resources>
+
+                <DataGrid.Columns>
+                    <DataGridTextColumn
+                        Width="3*"
+                        Binding="{Binding Nimi, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"
+                        Header="Tuotteen Nimi">
+                        <DataGridTextColumn.EditingElementStyle>
+                            <Style TargetType="TextBox">
+                                <Setter Property="MaxLength" Value="20" />
+                            </Style>
+                        </DataGridTextColumn.EditingElementStyle>
+                    </DataGridTextColumn>
+                    <DataGridTextColumn
+                        Width="*"
+                        Binding="{Binding Määrä, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"
+                        Header="Määrä">
+                        <DataGridTextColumn.EditingElementStyle>
+                            <Style TargetType="TextBox">
+                                <Setter Property="MaxLength" Value="6" />
+                            </Style>
+                        </DataGridTextColumn.EditingElementStyle>
+                    </DataGridTextColumn>
+                    <DataGridComboBoxColumn
+                        Width="*"
+                        Header="Yksikkö"
+                        ItemsSource="{StaticResource UnitList}"
+                        SelectedItemBinding="{Binding Yksikkö, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" />
+                    <DataGridTextColumn
+                        Width="*"
+                        Binding="{Binding A_Hinta, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"
+                        Header="Hinta">
+                        <DataGridTextColumn.EditingElementStyle>
+                            <Style TargetType="TextBox">
+                                <Setter Property="MaxLength" Value="6" />
+                            </Style>
+                        </DataGridTextColumn.EditingElementStyle>
+                    </DataGridTextColumn>
+
+                    <DataGridTextColumn
+                        Width="*"
+                        Binding="{Binding ALV_Euro, StringFormat={}{0:C}, Mode=OneWay}"
+                        Header="ALV %"
+                        IsReadOnly="True" />
+
+                    <DataGridTextColumn
+                        Width="*"
+                        Binding="{Binding Yhteensä, StringFormat={}{0:C}}"
+                        Header="Yhteensä" />
+                </DataGrid.Columns>
+            </DataGrid>
+        </GroupBox>
+
+        <Border
+            Grid.Row="4"
+            Padding="20"
+            Background="White"
+            BorderBrush="LightGray"
+            BorderThickness="0,1,0,0">
+
+            <StackPanel
+                HorizontalAlignment="Right"
+                VerticalAlignment="Center"
+                Orientation="Horizontal">
+
+                <TextBlock
+                    VerticalAlignment="Center"
+                    FontSize="18"
+                    Foreground="Gray"
+                    Text="Yhteensä: " />
+                <TextBlock
+                    x:Name="Total"
+                    Margin="0,0,40,0"
+                    VerticalAlignment="Center"
+                    FontSize="24"
+                    FontWeight="Bold"
+                    Foreground="Black"
+                    Text="0,00€" />
+
+                <Button
+                    x:Name="Cancel"
+                    Background="LightPink"
+                    BorderBrush="Red"
+                    Click="Cancel_Click"
+                    Content="Peruuta"
+                    Foreground="Red" />
+
+                <Button
+                    x:Name="Save"
+                    Background="White"
+                    BorderBrush="LightGray"
+                    Click="Tallenna_Click"
+                    Content="Tallenna" />
+
+                <Button
+                    x:Name="ToPDF_AND_Save"
+                    Background="LightGreen"
+                    BorderBrush="DarkGreen"
+                    Click="ToPDF_AND_Save_Click"
+                    Content="Tallenna &amp; Tulosta PDF"
+                    Foreground="DarkGreen" />
+            </StackPanel>
+        </Border>
+
+    </Grid>
+</Window>

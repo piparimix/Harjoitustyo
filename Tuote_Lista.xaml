@@ -1,0 +1,178 @@
+﻿<Window
+    x:Class="Harjoitustyö.Tuote_Lista"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Harjoitustyö"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:sys="clr-namespace:System;assembly=mscorlib"
+    Title="Rakennus Oy - Tuote Lista"
+    Width="900"
+    Height="600"
+    MinWidth="800"
+    MinHeight="500"
+    Background="GhostWhite"
+    ResizeMode="CanResize"
+    mc:Ignorable="d">
+
+    <Window.Resources>
+        <Style TargetType="Button">
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Margin" Value="5" />
+            <Setter Property="Padding" Value="15,5" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border
+                            Padding="{TemplateBinding Padding}"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="1"
+                            CornerRadius="6">
+                            <ContentPresenter
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                TextElement.FontWeight="SemiBold" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <TextBlock
+            Grid.Row="0"
+            Margin="20,20,0,0"
+            FontSize="26"
+            FontWeight="Light"
+            Foreground="DimGray"
+            Text="Tuote Lista" />
+
+        <DataGrid
+            x:Name="TuoteLista"
+            Grid.Row="1"
+            Margin="10,10,10,10"
+            AlternatingRowBackground="Beige"
+            AutoGenerateColumns="False"
+            Background="White"
+            CanUserAddRows="False"
+            Foreground="Black"
+            HorizontalGridLinesBrush="Black"
+            ItemsSource="{Binding Tuotteet}"
+            VerticalScrollBarVisibility="Auto">
+            <DataGrid.Resources>
+                <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="LightGray" />
+                <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="LightGray" />
+
+                <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="Black" />
+                <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightTextBrushKey}" Color="Black" />
+
+                <x:Array x:Key="UnitList" Type="sys:String">
+                    <sys:String>Kappale</sys:String>
+                    <sys:String>Kilogramma</sys:String>
+                    <sys:String>Metri</sys:String>
+                    <sys:String>Neliömetri</sys:String>
+                    <sys:String>Litra</sys:String>
+                    <sys:String>Tunti</sys:String>
+                </x:Array>
+            </DataGrid.Resources>
+            <DataGrid.Columns>
+                <DataGridTextColumn
+                    Width="*"
+                    Binding="{Binding Tuote_ID}"
+                    Header="Tuote ID"
+                    IsReadOnly="True" />
+                <DataGridTextColumn
+                    Width="3*"
+                    Binding="{Binding Nimi}"
+                    Header="Tuotteen Nimi" />
+                <DataGridTextColumn
+                    Width="*"
+                    Binding="{Binding Määrä, UpdateSourceTrigger=PropertyChanged}"
+                    Header="Määrä" />
+                <DataGridComboBoxColumn
+                    Width="*"
+                    Header="Yksikkö"
+                    ItemsSource="{StaticResource UnitList}"
+                    SelectedItemBinding="{Binding Yksikkö, UpdateSourceTrigger=PropertyChanged}" />
+                <DataGridTextColumn
+                    Width="*"
+                    Binding="{Binding A_Hinta, UpdateSourceTrigger=PropertyChanged}"
+                    Header="Hinta" />
+                <DataGridTextColumn
+                    Width="*"
+                    Binding="{Binding ALV_Euro, StringFormat={}{0:C}, Mode=OneWay}"
+                    Header="ALV %"
+                    IsReadOnly="True" />
+                <DataGridTextColumn
+                    Width="*"
+                    Binding="{Binding Yhteensä, StringFormat={}{0:C}}"
+                    Header="Yhteensä" />
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <Border
+            Grid.Row="2"
+            Padding="20"
+            Background="White"
+            BorderBrush="LightGray"
+            BorderThickness="0,1,0,0">
+
+            <StackPanel
+                HorizontalAlignment="Right"
+                VerticalAlignment="Bottom"
+                Orientation="Horizontal">
+
+                <StackPanel
+                    Margin="0,0,20,0"
+                    VerticalAlignment="Center"
+                    Orientation="Horizontal">
+                    <TextBlock
+                        Margin="0,0,10,0"
+                        VerticalAlignment="Center"
+                        Foreground="DimGray"
+                        Text="Poista Tuote (ID):" />
+                    <TextBox
+                        x:Name="DeleteID"
+                        Width="60"
+                        Height="30"
+                        Margin="0,0,10,0"
+                        Padding="5"
+                        VerticalAlignment="Center"
+                        VerticalContentAlignment="Center"
+                        BorderBrush="LightGray"
+                        BorderThickness="1" />
+                    <Button
+                        x:Name="DeleteBtn"
+                        Background="LavenderBlush"
+                        BorderBrush="LightPink"
+                        Click="DeleteBtn_Click"
+                        Content="Poista"
+                        Foreground="Crimson" />
+                </StackPanel>
+
+                <Button
+                    x:Name="Save"
+                    Background="HoneyDew"
+                    BorderBrush="LightGreen"
+                    Click="Save_Click"
+                    Content="Tallenna muutokset"
+                    Foreground="DarkGreen" />
+                <Button
+                    x:Name="Back"
+                    Background="White"
+                    BorderBrush="LightGray"
+                    Click="Back_Click"
+                    Content="Takaisin" />
+            </StackPanel>
+        </Border>
+    </Grid>
+</Window>
