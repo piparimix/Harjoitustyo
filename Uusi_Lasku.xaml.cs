@@ -17,9 +17,7 @@ namespace Harjoitustyö
         public Lasku Newlasku { get; set; } = new Lasku();
 
         public Uusi_Lasku()
-        {
-            InitializeComponent();
-
+        {         
             try
             {
                 // 1. Ladataan tuotteet tietokannasta alasvetovalikkoa varten
@@ -42,6 +40,7 @@ namespace Harjoitustyö
             {
                 MessageBox.Show($"Virhe alustuksessa: {ex.Message}");
             }
+            InitializeComponent();
         }
 
         private void Tallenna_Click(object sender, RoutedEventArgs e)

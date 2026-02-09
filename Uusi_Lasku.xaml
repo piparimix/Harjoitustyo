@@ -94,7 +94,7 @@
                 <Image
                     x:Name="BarcodeImage"
                     Width="200"
-                    Height="25"
+                    Height="30"
                     Stretch="UniformToFill" />
             </GroupBox>
         </WrapPanel>
@@ -236,16 +236,32 @@
                 </DataGrid.Resources>
 
                 <DataGrid.Columns>
+                    <DataGridComboBoxColumn
+                        Width="120"
+                        DisplayMemberPath="Nimi"
+                        Header="Tuote valikko"
+                        ItemsSource="{x:Static local:Uusi_Lasku.VarastoTuotteet}"
+                        SelectedValueBinding="{Binding Tuote_ID, UpdateSourceTrigger=PropertyChanged}"
+                        SelectedValuePath="Tuote_ID">
+                        <DataGridComboBoxColumn.EditingElementStyle>
+                            <Style TargetType="ComboBox">
+                                <Setter Property="IsEditable" Value="True" />
+                                <Setter Property="IsTextSearchEnabled" Value="True" />
+                                <Setter Property="TextSearch.TextPath" Value="Nimi" />
+                            </Style>
+                        </DataGridComboBoxColumn.EditingElementStyle>
+                    </DataGridComboBoxColumn>
                     <DataGridTextColumn
                         Width="3*"
                         Binding="{Binding Nimi, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"
                         Header="Tuotteen Nimi">
                         <DataGridTextColumn.EditingElementStyle>
                             <Style TargetType="TextBox">
-                                <Setter Property="MaxLength" Value="20" />
+                                <Setter Property="MaxLength" Value="50" />
                             </Style>
                         </DataGridTextColumn.EditingElementStyle>
                     </DataGridTextColumn>
+
                     <DataGridTextColumn
                         Width="*"
                         Binding="{Binding Määrä, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"
@@ -256,18 +272,20 @@
                             </Style>
                         </DataGridTextColumn.EditingElementStyle>
                     </DataGridTextColumn>
+
                     <DataGridComboBoxColumn
                         Width="*"
                         Header="Yksikkö"
                         ItemsSource="{StaticResource UnitList}"
                         SelectedItemBinding="{Binding Yksikkö, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" />
+
                     <DataGridTextColumn
                         Width="*"
                         Binding="{Binding A_Hinta, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}"
                         Header="Hinta">
                         <DataGridTextColumn.EditingElementStyle>
                             <Style TargetType="TextBox">
-                                <Setter Property="MaxLength" Value="6" />
+                                <Setter Property="MaxLength" Value="8" />
                             </Style>
                         </DataGridTextColumn.EditingElementStyle>
                     </DataGridTextColumn>
@@ -275,7 +293,7 @@
                     <DataGridTextColumn
                         Width="*"
                         Binding="{Binding ALV_Euro, StringFormat={}{0:C}, Mode=OneWay}"
-                        Header="ALV %"
+                        Header="ALV €"
                         IsReadOnly="True" />
 
                     <DataGridTextColumn

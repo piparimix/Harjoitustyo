@@ -45,12 +45,15 @@ namespace Harjoitustyö
                 data.SaveTo(ms);
                 ms.Seek(0, SeekOrigin.Begin);
 
-                BitmapImage bi = new BitmapImage();
-                bi.BeginInit();
-                bi.CacheOption = BitmapCacheOption.OnLoad;
-                bi.StreamSource = ms;
-                bi.EndInit();
-                return bi;
+                BitmapImage image = new BitmapImage();
+                image.BeginInit();
+                image.CacheOption = BitmapCacheOption.OnLoad;
+
+                image.StreamSource = ms;
+                image.EndInit();
+                image.Freeze(); // Parantaa suorituskykyä ja tekee kuvasta säikeistöturvallisen
+
+                return image;
             }
         }
     }

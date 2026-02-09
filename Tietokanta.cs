@@ -195,9 +195,11 @@ namespace Harjoitustyö
                 try
                 {
                     conn.Open();
+
                     // 1. Laskun otsikko
                     string sql = @"INSERT INTO Lasku (Päiväys, Eräpäivä, AsiakasNimi, AsiakasOsoite, AsiakasPosti, LaskuttajaNimi, LaskuttajaOsoite, LaskuttajaPosti, Lisätiedot) 
-                                   VALUES (@p, @ep, @an, @ao, @ap, @ln, @lo, @lp, @lisa)";
+                           VALUES (@p, @ep, @an, @ao, @ap, @ln, @lo, @lp, @lisa)";
+
                     MySqlCommand cmd = new MySqlCommand(sql, conn);
                     cmd.Parameters.AddWithValue("@p", lasku.Päiväys);
                     cmd.Parameters.AddWithValue("@ep", lasku.Eräpäivä);
@@ -214,13 +216,31 @@ namespace Harjoitustyö
 
                     // 2. Laskurivit
                     string rowSql = @"INSERT INTO Laskurivi (lasku_id, tuote_id, nimi, määrä, yksikkö, a_hinta, alv) 
-                                      VALUES (@lid, @tid, @n, @m, @y, @h, @a)";
+                              VALUES (@lid, @tid, @n, @m, @y, @h, @a)";
 
                     foreach (var rivi in lasku.Tuotteet)
                     {
+                        // --- UUSI LOGIIKKA ALKAA ---
+                        // Jos Tuote_ID on 0 (eli käyttäjä kirjoitti nimen käsin), tallennetaan se ensin Tuote-rekisteriin
+                        if (rivi.Tuote_ID == 0 && !string.IsNullOrWhiteSpace(rivi.Nimi))
+                        {
+                            string insertTuoteSql = "INSERT INTO Tuote (nimi, määrä, yksikkö, a_hinta, alv) VALUES (@tn, 0, @ty, @th, @ta)";
+                            using (MySqlCommand tCmd = new MySqlCommand(insertTuoteSql, conn))
+                            {
+                                tCmd.Parameters.AddWithValue("@tn", rivi.Nimi);
+                                tCmd.Parameters.AddWithValue("@ty", rivi.Yksikkö);
+                                tCmd.Parameters.AddWithValue("@th", rivi.A_Hinta);
+                                tCmd.Parameters.AddWithValue("@ta", rivi.ALV);
+                                tCmd.ExecuteNonQuery();
+
+                                // Päivitetään rivin Tuote_ID vastaamaan uutta tietokantariiviä
+                                rivi.Tuote_ID = (int)tCmd.LastInsertedId;
+                            }
+                        }
+                        // --- UUSI LOGIIKKA PÄÄTTYY ---
+
                         MySqlCommand rCmd = new MySqlCommand(rowSql, conn);
                         rCmd.Parameters.AddWithValue("@lid", lasku.LaskunNumero);
-                        // Jos Tuote_ID on 0 (ei valittu listasta), laitetaan NULL
                         rCmd.Parameters.AddWithValue("@tid", rivi.Tuote_ID == 0 ? (object)DBNull.Value : rivi.Tuote_ID);
                         rCmd.Parameters.AddWithValue("@n", rivi.Nimi);
                         rCmd.Parameters.AddWithValue("@m", rivi.Määrä);
@@ -229,6 +249,14 @@ namespace Harjoitustyö
                         rCmd.Parameters.AddWithValue("@a", rivi.ALV);
                         rCmd.ExecuteNonQuery();
                     }
+
+                    // Päivitetään staattinen tuotelista, jotta uusi tuote näkyy heti valikoissa
+                    if (Uusi_Lasku.VarastoTuotteet != null)
+                    {
+                        // Tämän voi tehdä myös hakemalla kannasta uudestaan, mutta tämä on nopeampi:
+                        // Uusi_Lasku.VarastoTuotteet = HaeKaikkiTuotteet(); 
+                    }
+
                     return true;
                 }
                 catch (Exception ex)
@@ -440,7 +468,7 @@ namespace Harjoitustyö
                     conn.Open();
                     // 1. Päivitetään laskun perustiedot
                     string sql = @"UPDATE Lasku SET Päiväys=@p, Eräpäivä=@ep, AsiakasNimi=@an, AsiakasOsoite=@ao, 
-                           AsiakasPosti=@ap, Lisätiedot=@lisa WHERE LaskunNumero=@id";
+                   AsiakasPosti=@ap, Lisätiedot=@lisa WHERE LaskunNumero=@id";
 
                     MySqlCommand cmd = new MySqlCommand(sql, conn);
                     cmd.Parameters.AddWithValue("@p", lasku.Päiväys);
@@ -456,10 +484,27 @@ namespace Harjoitustyö
                     new MySqlCommand($"DELETE FROM Laskurivi WHERE lasku_id={lasku.LaskunNumero}", conn).ExecuteNonQuery();
 
                     string rowSql = @"INSERT INTO Laskurivi (lasku_id, tuote_id, nimi, määrä, yksikkö, a_hinta, alv) 
-                              VALUES (@lid, @tid, @n, @m, @y, @h, @a)";
+                      VALUES (@lid, @tid, @n, @m, @y, @h, @a)";
 
                     foreach (var rivi in lasku.Tuotteet)
                     {
+                        // --- UUSI LOGIIKKA ALKAA ---
+                        if (rivi.Tuote_ID == 0 && !string.IsNullOrWhiteSpace(rivi.Nimi))
+                        {
+                            string insertTuoteSql = "INSERT INTO Tuote (nimi, määrä, yksikkö, a_hinta, alv) VALUES (@tn, 0, @ty, @th, @ta)";
+                            using (MySqlCommand tCmd = new MySqlCommand(insertTuoteSql, conn))
+                            {
+                                tCmd.Parameters.AddWithValue("@tn", rivi.Nimi);
+                                tCmd.Parameters.AddWithValue("@ty", rivi.Yksikkö);
+                                tCmd.Parameters.AddWithValue("@th", rivi.A_Hinta);
+                                tCmd.Parameters.AddWithValue("@ta", rivi.ALV);
+                                tCmd.ExecuteNonQuery();
+
+                                rivi.Tuote_ID = (int)tCmd.LastInsertedId;
+                            }
+                        }
+                        // --- UUSI LOGIIKKA PÄÄTTYY ---
+
                         MySqlCommand rCmd = new MySqlCommand(rowSql, conn);
                         rCmd.Parameters.AddWithValue("@lid", lasku.LaskunNumero);
                         rCmd.Parameters.AddWithValue("@tid", rivi.Tuote_ID == 0 ? (object)DBNull.Value : rivi.Tuote_ID);

@@ -96,6 +96,13 @@ namespace Harjoitustyö
         {
             if (PropertyChanged != null) PropertyChanged(this, new PropertyChangedEventArgs(name));
         }
+        public string PDFPolku
+        {
+            get
+            {
+                return $"Lataa Lasku_{LaskunNumero}.pdf";
+            }
+        }
     }
 
     // --- LASKURIVI (Laskun rivi) ---
