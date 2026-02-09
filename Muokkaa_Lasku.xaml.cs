@@ -1,9 +1,11 @@
-﻿using System.Windows;
+﻿using MySql.Data.MySqlClient;
+using System.Collections.ObjectModel;
 using System.Linq;
-using static Harjoitustyö.Uusi_Lasku;
-using static Harjoitustyö.Tietokanta;
-using static Harjoitustyö.PdfService;
+using System.Windows;
 using static Harjoitustyö.Barcode;
+using static Harjoitustyö.PdfService;
+using static Harjoitustyö.Tietokanta;
+using static Harjoitustyö.Uusi_Lasku;
 
 namespace Harjoitustyö
 {
@@ -29,7 +31,7 @@ namespace Harjoitustyö
             if (this.DataContext is Lasku muokattuLasku)
             {
                 // 2. Call the database update method
-                bool onnistui = Tietokanta.PäivitäLasku(muokattuLasku);
+                bool onnistui = Tietokanta.PaivitaLasku(muokattuLasku);
 
                 if (onnistui)
                 {
@@ -90,14 +92,17 @@ namespace Harjoitustyö
 
             if (!string.IsNullOrWhiteSpace(nimi))
             {
-                // Kutsu tietokantafunktiota tässä
-                Lasku haettuLasku = Tietokanta.HaeNimellä(nimi);
+                // 1. Haetaan lista kaikista nimellä löytyvistä laskuista
+                var hakutulokset = Tietokanta.HaeNimella(nimi);
 
-                if (haettuLasku != null)
+                // 2. Tarkistetaan löytyikö yhtään laskua
+                if (hakutulokset != null && hakutulokset.Count > 0)
                 {
+                    // 3. Otetaan listan ensimmäinen lasku
+                    Lasku haettuLasku = hakutulokset[0];
                     haettuLasku.Tuotteet = Tietokanta.HaeTuotteetLaskulle(haettuLasku.LaskunNumero);
 
-                    // 4. Asetetaan ikkunan DataContext löydetyksi laskuksi.
+                    // 4. Päivitetään käyttöliittymä
                     BarcodeImage.Source = Barcode.GenerateBarcode(haettuLasku.LaskunNumero.ToString());
                     this.DataContext = haettuLasku;
                     PäivitäSumma();

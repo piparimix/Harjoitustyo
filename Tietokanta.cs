@@ -133,7 +133,7 @@ namespace Harjoitustyö
                 {
                     cmd.Transaction = transaction;
 
-                    // A. Luodaan tuotteet (Uniikit)
+                    // A. Luodaan tuotteet
                     string[] prducts = { "Parketin hionta", "Maalaus", "Laminaatti", "Listat", "Tasoite", "Ruuvit", "Sähkötyöt", "Putkityöt", "Siivous", "Kuljetus" };
                     string[] units = { "kpl", "m2", "pkt", "m", "kg", "h" };
                     List<int> createdProductIds = new List<int>();
@@ -151,7 +151,7 @@ namespace Harjoitustyö
                     // B. Luodaan laskut
                     for (int i = 0; i < laskujenMaara; i++)
                     {
-                        string cName = $"Asiakas {rnd.Next(1000)}";
+                        string cName = $"Asiakas {i + 1}";
                         cmd.CommandText = $"INSERT INTO Lasku (Päiväys, Eräpäivä, AsiakasNimi, AsiakasOsoite, AsiakasPosti, LaskuttajaNimi, LaskuttajaOsoite, LaskuttajaPosti, Lisätiedot) VALUES (CURDATE(), CURDATE(), '{cName}', 'Testitie 1', '00100', 'Rakennus Oy', 'Tie 15', '00100', '')";
                         cmd.ExecuteNonQuery();
                         long laskuId = cmd.LastInsertedId;
@@ -393,6 +393,130 @@ namespace Harjoitustyö
                 // ON DELETE SET NULL kanta-asetuksissa pitää huolen laskuriveistä
                 new MySqlCommand($"DELETE FROM Tuote WHERE tuote_id={id}", conn).ExecuteNonQuery();
             }
+        }
+        public static Lasku HaeLasku(int id)
+        {
+            using (MySqlConnection conn = new MySqlConnection(ConnectionString))
+            {
+                try
+                {
+                    conn.Open();
+                    string sql = "SELECT * FROM Lasku WHERE LaskunNumero = @id";
+                    using (MySqlCommand cmd = new MySqlCommand(sql, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@id", id);
+                        using (MySqlDataReader r = cmd.ExecuteReader())
+                        {
+                            if (r.Read())
+                            {
+                                var l = new Lasku
+                                {
+                                    LaskunNumero = r.GetInt32("LaskunNumero"),
+                                    Päiväys = r.GetDateTime("Päiväys"),
+                                    Eräpäivä = r.GetDateTime("Eräpäivä"),
+                                };
+                                l.AsiakasInfo.Nimi = r.GetString("AsiakasNimi");
+                                l.AsiakasInfo.Osoite = r.GetString("AsiakasOsoite");
+                                l.AsiakasInfo.Postinumero = r.GetString("AsiakasPosti");
+                                l.AsiakasInfo.Lisätiedot = r.IsDBNull(r.GetOrdinal("Lisätiedot")) ? "" : r.GetString("Lisätiedot");
+
+                                r.Close(); // Suljetaan lukija ennen rivien hakua
+                                l.Tuotteet = HaeTuotteetLaskulle(id);
+                                return l;
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex) { MessageBox.Show("Laskun haku epäonnistui: " + ex.Message); }
+            }
+            return null;
+        }
+        public static bool PaivitaLasku(Lasku lasku)
+        {
+            using (MySqlConnection conn = new MySqlConnection(ConnectionString))
+            {
+                try
+                {
+                    conn.Open();
+                    // 1. Päivitetään laskun perustiedot
+                    string sql = @"UPDATE Lasku SET Päiväys=@p, Eräpäivä=@ep, AsiakasNimi=@an, AsiakasOsoite=@ao, 
+                           AsiakasPosti=@ap, Lisätiedot=@lisa WHERE LaskunNumero=@id";
+
+                    MySqlCommand cmd = new MySqlCommand(sql, conn);
+                    cmd.Parameters.AddWithValue("@p", lasku.Päiväys);
+                    cmd.Parameters.AddWithValue("@ep", lasku.Eräpäivä);
+                    cmd.Parameters.AddWithValue("@an", lasku.AsiakasInfo.Nimi);
+                    cmd.Parameters.AddWithValue("@ao", lasku.AsiakasInfo.Osoite);
+                    cmd.Parameters.AddWithValue("@ap", lasku.AsiakasInfo.Postinumero);
+                    cmd.Parameters.AddWithValue("@lisa", lasku.AsiakasInfo.Lisätiedot ?? "");
+                    cmd.Parameters.AddWithValue("@id", lasku.LaskunNumero);
+                    cmd.ExecuteNonQuery();
+
+                    // 2. Päivitetään rivit (poistetaan vanhat ja lisätään uudet)
+                    new MySqlCommand($"DELETE FROM Laskurivi WHERE lasku_id={lasku.LaskunNumero}", conn).ExecuteNonQuery();
+
+                    string rowSql = @"INSERT INTO Laskurivi (lasku_id, tuote_id, nimi, määrä, yksikkö, a_hinta, alv) 
+                              VALUES (@lid, @tid, @n, @m, @y, @h, @a)";
+
+                    foreach (var rivi in lasku.Tuotteet)
+                    {
+                        MySqlCommand rCmd = new MySqlCommand(rowSql, conn);
+                        rCmd.Parameters.AddWithValue("@lid", lasku.LaskunNumero);
+                        rCmd.Parameters.AddWithValue("@tid", rivi.Tuote_ID == 0 ? (object)DBNull.Value : rivi.Tuote_ID);
+                        rCmd.Parameters.AddWithValue("@n", rivi.Nimi);
+                        rCmd.Parameters.AddWithValue("@m", rivi.Määrä);
+                        rCmd.Parameters.AddWithValue("@y", rivi.Yksikkö);
+                        rCmd.Parameters.AddWithValue("@h", rivi.A_Hinta);
+                        rCmd.Parameters.AddWithValue("@a", rivi.ALV);
+                        rCmd.ExecuteNonQuery();
+                    }
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Päivitysvirhe: " + ex.Message);
+                    return false;
+                }
+            }
+        }
+        public static ObservableCollection<Lasku> HaeNimella(string nimi)
+        {
+            var lista = new ObservableCollection<Lasku>();
+            using (MySqlConnection conn = new MySqlConnection(ConnectionString))
+            {
+                try
+                {
+                    conn.Open();
+                    string sql = "SELECT * FROM Lasku WHERE AsiakasNimi LIKE @nimi";
+                    using (MySqlCommand cmd = new MySqlCommand(sql, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@nimi", "%" + nimi + "%");
+                        using (MySqlDataReader r = cmd.ExecuteReader())
+                        {
+                            while (r.Read())
+                            {
+                                var l = new Lasku
+                                {
+                                    LaskunNumero = r.GetInt32("LaskunNumero"),
+                                    Päiväys = r.GetDateTime("Päiväys"),
+                                    Eräpäivä = r.GetDateTime("Eräpäivä"),
+                                };
+                                l.AsiakasInfo.Nimi = r.GetString("AsiakasNimi");
+                                l.AsiakasInfo.Osoite = r.GetString("AsiakasOsoite");
+                                l.AsiakasInfo.Postinumero = r.GetString("AsiakasPosti");
+                                lista.Add(l);
+                            }
+                        }
+                    }
+                    // Haetaan rivit jokaiselle löytyneelle laskulle
+                    foreach (var lasku in lista)
+                    {
+                        lasku.Tuotteet = HaeTuotteetLaskulle(lasku.LaskunNumero);
+                    }
+                }
+                catch (Exception ex) { MessageBox.Show("Haku virhe nimen perusteella: " + ex.Message); }
+            }
+            return lista;
         }
     }
 }
