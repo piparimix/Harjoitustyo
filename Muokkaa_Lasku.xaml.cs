@@ -17,7 +17,6 @@ namespace Harjoitustyö
         public Muokkaa_Lasku()
         {
 
-
             if (Uusi_Lasku.VarastoTuotteet == null || Uusi_Lasku.VarastoTuotteet.Count == 0)
             {
                 Uusi_Lasku.VarastoTuotteet = Tietokanta.HaeKaikkiTuotteet();

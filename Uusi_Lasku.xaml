@@ -94,7 +94,7 @@
                 <Image
                     x:Name="BarcodeImage"
                     Width="200"
-                    Height="30"
+                    Height="25"
                     Stretch="UniformToFill" />
             </GroupBox>
         </WrapPanel>
