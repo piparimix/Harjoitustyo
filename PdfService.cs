@@ -1,16 +1,14 @@
 ﻿using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
-using System.Linq; 
-using static Harjoitustyö.Uusi_Lasku;
-using static Harjoitustyö.Tietokanta;
-using static Harjoitustyö.Barcode;
+using System.Linq;
+using Harjoitustyö; // Importtaa namespace, jossa Lasku nyt asuu
 
 namespace Harjoitustyö
 {
     public static class PdfService
     {
-        // Metodi PDF-laskun luomiseen, käyttäen QuestPDF-kirjastoa ja Lasku-olion tietoja
+        // Viittaa nyt suoraan Lasku-luokkaan, ei Uusi_Lasku.Lasku
         public static void LuoPDF(Lasku lasku, string tiedostoNimi)
         {
             QuestPDF.Settings.License = LicenseType.Community;
@@ -21,50 +19,23 @@ namespace Harjoitustyö
                 {
                     page.Size(PageSizes.A4);
                     page.Margin(2, Unit.Centimetre);
-                    page.PageColor(Colors.White);
                     page.DefaultTextStyle(x => x.FontSize(12));
 
-                    // 1. OTSIKKO JA VIIVAKOODI
                     page.Header().Row(row =>
                     {
                         row.RelativeItem().Column(column =>
                         {
-                            column.Item().Text($"Lasku {lasku.LaskunNumero}").SemiBold().FontSize(20).FontColor(Colors.Blue.Medium);
+                            column.Item().Text($"Lasku {lasku.LaskunNumero}").SemiBold().FontSize(20);
                             column.Item().Text($"Päiväys: {lasku.Päiväys:dd.MM.yyyy}");
-                            column.Item().Text($"Eräpäivä: {lasku.Eräpäivä:dd.MM.yyyy}");
                         });
-
-                        var barcodeData = GetBarcodeBytes(lasku.LaskunNumero.ToString());
-                        row.ConstantItem(150).Image(barcodeData);
                     });
 
-                    // 2. SISÄLTÖ (Osoitteet, Taulukko ja Summa saman Content-lohkon sisällä)
                     page.Content().PaddingVertical(1, Unit.Centimetre).Column(col =>
                     {
-                        // OSOITETIEDOT
-                        col.Item().Row(row =>
-                        {
-                            row.RelativeItem().Column(column =>
-                            {
-                                column.Item().Text("Laskuttaja").Bold();
-                                column.Item().Text(lasku.LaskuttajaInfo.Nimi);
-                                column.Item().Text(lasku.LaskuttajaInfo.Osoite);
-                                column.Item().Text(lasku.LaskuttajaInfo.Postinumero);
-                            });
+                        col.Item().Text($"Asiakas: {lasku.AsiakasInfo.Nimi}");
+                        col.Item().Text(lasku.AsiakasInfo.Osoite);
 
-                            row.RelativeItem().Column(column =>
-                            {
-                                column.Item().Text("Asiakas").Bold();
-                                column.Item().Text(lasku.AsiakasInfo.Nimi);
-                                column.Item().Text(lasku.AsiakasInfo.Osoite);
-                                column.Item().Text(lasku.AsiakasInfo.Postinumero);
-                            });
-                        });
-
-                        col.Item().PaddingTop(1, Unit.Centimetre);
-
-                        // TUOTETAULUKKO 
-                        col.Item().Table(table =>
+                        col.Item().PaddingTop(10).Table(table =>
                         {
                             table.ColumnsDefinition(columns =>
                             {
@@ -72,57 +43,29 @@ namespace Harjoitustyö
                                 columns.RelativeColumn();
                                 columns.RelativeColumn();
                                 columns.RelativeColumn();
-                                columns.RelativeColumn();
                             });
 
                             table.Header(header =>
                             {
-                                header.Cell().BorderBottom(1).PaddingBottom(5).Text("Tuote").Bold();
-                                header.Cell().BorderBottom(1).PaddingBottom(5).Text("Määrä").Bold();
-                                header.Cell().BorderBottom(1).PaddingBottom(5).Text("Yksikkö").Bold();
-                                header.Cell().BorderBottom(1).PaddingBottom(5).Text("Hinta").Bold();
-                                header.Cell().BorderBottom(1).PaddingBottom(5).Text("Yhteensä").Bold();
+                                header.Cell().Text("Tuote").Bold();
+                                header.Cell().AlignRight().Text("Määrä").Bold();
+                                header.Cell().AlignRight().Text("Hinta").Bold();
+                                header.Cell().AlignRight().Text("Yhteensä").Bold();
                             });
 
                             foreach (var tuote in lasku.Tuotteet)
                             {
-                                table.Cell().PaddingVertical(2).Text(tuote.Nimi);
-                                table.Cell().PaddingVertical(2).Text(tuote.Määrä.ToString());
-                                table.Cell().PaddingVertical(2).Text(tuote.Yksikkö);
-                                table.Cell().PaddingVertical(2).Text($"{tuote.A_Hinta:C}");
-                                table.Cell().PaddingVertical(2).Text($"{tuote.Yhteensä:C}");
+                                table.Cell().Text(tuote.Nimi);
+                                table.Cell().AlignRight().Text($"{tuote.Määrä} {tuote.Yksikkö}");
+                                table.Cell().AlignRight().Text($"{tuote.A_Hinta:C}");
+                                table.Cell().AlignRight().Text($"{tuote.Yhteensä:C}");
                             }
                         });
 
-                        // LOPPUSUMMAT
-                        col.Item().PaddingTop(10).AlignRight().Column(sumCol =>
-                        {
-                            sumCol.Item().Text(text =>
-                            {
-                                text.Span("Yhteensä (sis. ALV): ").FontSize(14);
-                                text.Span($"{lasku.Yhteensä:C}").FontSize(16).Bold();
-                            });
-
-                            decimal alvOsuus = lasku.Tuotteet.Sum(t => t.ALV_Euro);
-                            sumCol.Item().Text($"Josta ALV: {alvOsuus:C}").FontSize(10).Italic();
-                        });
-
-                        // Mahdolliset lisätiedot
-                        if (!string.IsNullOrWhiteSpace(lasku.AsiakasInfo.Lisätiedot))
-                        {
-                            col.Item().PaddingTop(20).Text(text => {
-                                text.Span("Lisätiedot: ").Bold();
-                                text.Span(lasku.AsiakasInfo.Lisätiedot);
-                            });
-                        }
+                        col.Item().PaddingTop(10).AlignRight().Text($"Yhteensä: {lasku.Yhteensä:C}").FontSize(14).Bold();
                     });
 
-                    // 3. ALATUNNISTE
-                    page.Footer().AlignCenter().Text(x =>
-                    {
-                        x.Span("Sivu ");
-                        x.CurrentPageNumber();
-                    });
+                    page.Footer().AlignCenter().Text(x => x.CurrentPageNumber());
                 });
             })
             .GeneratePdf(tiedostoNimi);

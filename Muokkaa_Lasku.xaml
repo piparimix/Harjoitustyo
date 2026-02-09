@@ -263,12 +263,13 @@
                     <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightTextBrushKey}" Color="Black" />
 
                     <x:Array x:Key="UnitList" Type="sys:String">
-                        <sys:String>Kappale</sys:String>
-                        <sys:String>Kilogramma</sys:String>
-                        <sys:String>Metri</sys:String>
-                        <sys:String>Neliömetri</sys:String>
-                        <sys:String>Litra</sys:String>
-                        <sys:String>Tunti</sys:String>
+                        <sys:String>kpl</sys:String>
+                        <sys:String>kg</sys:String>
+                        <sys:String>m</sys:String>
+                        <sys:String>m2</sys:String>
+                        <sys:String>l</sys:String>
+                        <sys:String>h</sys:String>
+                        <sys:String>pkt</sys:String>
                     </x:Array>
                 </DataGrid.Resources>
 

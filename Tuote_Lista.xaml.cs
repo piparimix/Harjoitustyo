@@ -1,22 +1,16 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.Windows;
 using static Harjoitustyö.Uusi_Lasku;
 
-
 namespace Harjoitustyö
 {
-    /// <summary>
-    /// Interaction logic for Tuote_Lista.xaml
-    /// </summary>
     public partial class Tuote_Lista : Window
     {
         public Tuote_Lista()
         {
             InitializeComponent();
-
-            // Hae tuotteet tietokantaluokan avulla ja aseta ne taulukkoon
-            var tuotteet = Tietokanta.HaeKaikkiTuotteet();
-            TuoteLista.ItemsSource = tuotteet;
+            LataaTuotteet();
         }
 
         private void Back_Click(object sender, RoutedEventArgs e)
@@ -34,33 +28,45 @@ namespace Harjoitustyö
 
         private void Save_Click(object sender, RoutedEventArgs e)
         {
-            var tuotteet = TuoteLista.ItemsSource as ObservableCollection<Lasku.Tuote>;
+            // Huom: varmista että käytät oikeaa tyyppiä (Tuote eikä Lasku.Tuote)
+            var tuotteet = TuoteLista.ItemsSource as ObservableCollection<Tuote>;
 
             if (tuotteet != null)
             {
-                int paivitettyMaara = 0;
+                int lisatyt = 0;
+                int paivitetyt = 0;
 
                 foreach (var tuote in tuotteet)
                 {
-                    // Varmistetaan että on oikea ID ennen päivitystä
-                    if (tuote.Tuote_ID > 0)
+                    // Jos Tuote_ID on 0, se on uusi rivi -> LISÄTÄÄN
+                    if (tuote.Tuote_ID == 0)
+                    {
+                        // Varmistetaan, ettei tallenneta tyhjiä rivejä vahingossa
+                        if (!string.IsNullOrWhiteSpace(tuote.Nimi))
+                        {
+                            Tietokanta.LisaaTuote(tuote);
+                            lisatyt++;
+                        }
+                    }
+                    // Jos Tuote_ID > 0, se on olemassa oleva rivi -> PÄIVITETÄÄN
+                    else
                     {
                         Tietokanta.PaivitaTuote(tuote);
-                        paivitettyMaara++;
+                        paivitetyt++;
                     }
                 }
 
-                MessageBox.Show($"Muutokset tallennettu tietokantaan");         
+                MessageBox.Show($"Tallennettu!\nUusia tuotteita: {lisatyt}\nPäivitettyjä: {paivitetyt}");
+
+                // Ladataan lista uudelleen, jotta uudet tuotteet saavat ID:t tietokannasta näkyviin
                 LataaTuotteet();
             }
         }
 
         private void DeleteBtn_Click(object sender, RoutedEventArgs e)
         {
-            // Tarkistetaan, onko tekstikenttään syötetty numero
             if (int.TryParse(DeleteID.Text, out int id))
             {
-                // Kysytään vahvistus käyttäjältä
                 MessageBoxResult result = MessageBox.Show(
                     $"Haluatko varmasti poistaa tuoterivin ID: {id}?\n\nTämä poistaa tuotteen pysyvästi tietokannasta.",
                     "Vahvista tuotteen poisto",
@@ -71,14 +77,9 @@ namespace Harjoitustyö
                 {
                     try
                     {
-                        // Kutsutaan tietokantafunktiota
                         Tietokanta.PoistaTuote(id);
-
                         MessageBox.Show("Tuote poistettu onnistuneesti.", "Poisto suoritettu", MessageBoxButton.OK, MessageBoxImage.Information);
-
-                        DeleteID.Text = ""; // Tyhjennetään kenttä
-
-                        // Päivitetään lista näytölle
+                        DeleteID.Text = "";
                         LataaTuotteet();
                     }
                     catch (Exception ex)

@@ -63,7 +63,7 @@
             AlternatingRowBackground="Beige"
             AutoGenerateColumns="False"
             Background="White"
-            CanUserAddRows="False"
+            CanUserAddRows="True"
             Foreground="Black"
             HorizontalGridLinesBrush="Black"
             ItemsSource="{Binding Tuotteet}"
@@ -76,12 +76,13 @@
                 <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightTextBrushKey}" Color="Black" />
 
                 <x:Array x:Key="UnitList" Type="sys:String">
-                    <sys:String>Kappale</sys:String>
-                    <sys:String>Kilogramma</sys:String>
-                    <sys:String>Metri</sys:String>
-                    <sys:String>Neliömetri</sys:String>
-                    <sys:String>Litra</sys:String>
-                    <sys:String>Tunti</sys:String>
+                    <sys:String>kpl</sys:String>
+                    <sys:String>kg</sys:String>
+                    <sys:String>m</sys:String>
+                    <sys:String>m2</sys:String>
+                    <sys:String>l</sys:String>
+                    <sys:String>h</sys:String>
+                    <sys:String>pkt</sys:String>
                 </x:Array>
             </DataGrid.Resources>
             <DataGrid.Columns>
@@ -94,10 +95,6 @@
                     Width="3*"
                     Binding="{Binding Nimi}"
                     Header="Tuotteen Nimi" />
-                <DataGridTextColumn
-                    Width="*"
-                    Binding="{Binding Määrä, UpdateSourceTrigger=PropertyChanged}"
-                    Header="Määrä" />
                 <DataGridComboBoxColumn
                     Width="*"
                     Header="Yksikkö"
@@ -109,13 +106,9 @@
                     Header="Hinta" />
                 <DataGridTextColumn
                     Width="*"
-                    Binding="{Binding ALV_Euro, StringFormat={}{0:C}, Mode=OneWay}"
+                    Binding="{Binding ALV, Mode=OneWay}"
                     Header="ALV %"
                     IsReadOnly="True" />
-                <DataGridTextColumn
-                    Width="*"
-                    Binding="{Binding Yhteensä, StringFormat={}{0:C}}"
-                    Header="Yhteensä" />
             </DataGrid.Columns>
         </DataGrid>
 
