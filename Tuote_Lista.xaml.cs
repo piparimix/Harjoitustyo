@@ -97,38 +97,6 @@ namespace Harjoitustyö
                     }
                 }
             }
-        }
-
-
-        private void DeleteBtn_Click(object sender, RoutedEventArgs e)
-        {
-            if (int.TryParse(DeleteID.Text, out int id))
-            {
-                MessageBoxResult result = MessageBox.Show(
-                    $"Haluatko varmasti poistaa tuoterivin ID: {id}?\n\nTämä poistaa tuotteen pysyvästi tietokannasta.",
-                    "Vahvista tuotteen poisto",
-                    MessageBoxButton.YesNo,
-                    MessageBoxImage.Warning);
-
-                if (result == MessageBoxResult.Yes)
-                {
-                    try
-                    {
-                        Tietokanta.PoistaTuote(id);
-                        MessageBox.Show("Tuote poistettu onnistuneesti.", "Poisto suoritettu", MessageBoxButton.OK, MessageBoxImage.Information);
-                        DeleteID.Text = "";
-                        LataaTuotteet();
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show($"Tuotteen poisto epäonnistui: {ex.Message}", "Virhe", MessageBoxButton.OK, MessageBoxImage.Error);
-                    }
-                }
-            }
-            else
-            {
-                MessageBox.Show("Syötä kelvollinen tuotteen ID-numero poistaaksesi rivin.", "Virheellinen syöte", MessageBoxButton.OK, MessageBoxImage.Information);
-            }
-        }
+        }      
     }
 }

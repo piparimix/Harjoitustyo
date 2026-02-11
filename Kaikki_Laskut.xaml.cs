@@ -107,40 +107,6 @@ namespace Harjoitustyö
                     }
                 }
             }
-        }
-
-        private void DeleteBtn_Click(object sender, RoutedEventArgs e)
-        {
-            if (int.TryParse(DeleteID.Text, out int id))
-            {
-                // Kysytään vahvistus käyttäjältä
-                MessageBoxResult result = MessageBox.Show($"Haluatko varmasti poistaa laskun numero {id}?",
-                    "Vahvista poisto", MessageBoxButton.YesNo, MessageBoxImage.Warning);
-
-                if (result == MessageBoxResult.Yes)
-                {
-                    // Kutsutaan tietokantafunktiota
-                    bool onnistui = Tietokanta.PoistaLasku(id);
-
-                    if (onnistui)
-                    {
-                        MessageBox.Show("Lasku poistettu onnistuneesti.");
-                        DeleteID.Text = ""; // Tyhjennetään tekstikenttä
-
-                        // Päivitetään lista hakemalla laskut uudelleen
-                        var laskut = Tietokanta.HaeKaikkiLaskut();
-                        TuoteLista.ItemsSource = laskut;
-                    }
-                    else
-                    {
-                        MessageBox.Show("Laskun poisto epäonnistui. Tarkista ID.");
-                    }
-                }
-            }
-            else
-            {
-                MessageBox.Show("Syötä kelvollinen laskun numero.");
-            }
-        }
+        }       
     }
 }

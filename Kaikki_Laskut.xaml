@@ -204,33 +204,6 @@
                 HorizontalAlignment="Right"
                 VerticalAlignment="Bottom"
                 Orientation="Horizontal">
-                <StackPanel
-                    Margin="0,0,20,0"
-                    VerticalAlignment="Center"
-                    Orientation="Horizontal">
-                    <TextBlock
-                        Margin="0,0,10,0"
-                        VerticalAlignment="Center"
-                        Foreground="DimGray"
-                        Text="Poista Lasku (ID):" />
-                    <TextBox
-                        x:Name="DeleteID"
-                        Width="60"
-                        Height="30"
-                        Margin="0,0,10,0"
-                        Padding="5"
-                        VerticalAlignment="Center"
-                        VerticalContentAlignment="Center"
-                        BorderBrush="LightGray"
-                        BorderThickness="1" />
-                    <Button
-                        x:Name="DeleteBtn"
-                        Background="LavenderBlush"
-                        BorderBrush="LightPink"
-                        Click="DeleteBtn_Click"
-                        Content="Poista"
-                        Foreground="Crimson" />
-                </StackPanel>
                 <Button
                     x:Name="Back"
                     Width="100"

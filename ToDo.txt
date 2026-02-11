@@ -1,0 +1,5 @@
+﻿Tuote lista näkymä antaa tallentaa osittain tyhjän rivin mutta tuottaa virheen. trakistus että kaikki rivit on täytetty ennen tallennusta.
+
+Hae lasku nimellä antaa vain ensimmäisen osuman, vaikka lasku löytyy useammalla nimellä. Tarkista että kaikki osumat näytetään ja että oikea lasku valitaan.
+
+Laskun eräpäivän voi laittaa menneisyyteen, mikä ei ole järkevää. Lisää tarkistus että eräpäivä ei voi olla ennen päivämäärää.
