@@ -63,6 +63,43 @@ namespace Harjoitustyö
             }
         }
 
+        private void PoistaRivi_Click(object sender, RoutedEventArgs e)
+        {
+            // 1. Haetaan painike, jota klikattiin
+            if (sender is System.Windows.Controls.Button button && button.DataContext is Tuote valittuTuote)
+            {
+                // Tässä meillä on nyt se tuote (valittuTuote), jonka riviä painettiin.
+                // Otetaan ID talteen
+                int id = valittuTuote.Tuote_ID;
+
+                // 2. Kysytään varmistus
+                MessageBoxResult result = MessageBox.Show(
+                    $"Haluatko varmasti poistaa tuoterivin ID: {id}?\n\nTämä poistaa tuotteen pysyvästi tietokannasta.",
+                    "Vahvista tuotteen poisto",
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Warning);
+
+                if (result == MessageBoxResult.Yes)
+                {
+                    try
+                    {
+                        // 3. Suoritetaan poisto
+                        Tietokanta.PoistaTuote(id);
+
+                        MessageBox.Show("Tuote poistettu onnistuneesti.", "Poisto suoritettu", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                        // 4. Päivitetään lista
+                        LataaTuotteet();
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"Tuotteen poisto epäonnistui: {ex.Message}", "Virhe", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                }
+            }
+        }
+
+
         private void DeleteBtn_Click(object sender, RoutedEventArgs e)
         {
             if (int.TryParse(DeleteID.Text, out int id))

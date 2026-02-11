@@ -22,45 +22,90 @@ namespace Harjoitustyö
             this.Close();
         }
 
-        private void OpenPDF_Click(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
+        private void AvaaPDFRivi_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                TextBlock textBlock = (TextBlock)sender;
-                // Tämä olio on peräisin listanäkymästä, eikä siinä ole tuoterivejä mukana
-                Lasku listaltaValittu = (Lasku)textBlock.DataContext;
-
-                // Määritetään tallennuspolku
-                string projectRoot = System.IO.Path.GetFullPath(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\..\"));
-                string folderPath = System.IO.Path.Combine(projectRoot, "Laskut");
-
-                // Varmistetaan, että kansio on olemassa
-                if (!System.IO.Directory.Exists(folderPath))
-                    System.IO.Directory.CreateDirectory(folderPath);
-
-                string fileName = $"Lasku_{listaltaValittu.LaskunNumero}.pdf";
-                string fullPath = System.IO.Path.Combine(folderPath, fileName);
-
-                // KORJAUS ALKAA TÄSTÄ:
-                // Haetaan laskun TÄYDELLISET tiedot tietokannasta numeron perusteella
-                Lasku täysiLasku = Tietokanta.HaeLasku(listaltaValittu.LaskunNumero);
-
-                if (täysiLasku != null)
+                // 1. Haetaan painettu nappi ja sen takana oleva lasku
+                if (sender is Button button && button.DataContext is Lasku listaltaValittu)
                 {
-                    // Haetaan erikseen laskun tuoterivit, jotta taulukko ei ole tyhjä
-                    täysiLasku.Tuotteet = Tietokanta.HaeTuotteetLaskulle(täysiLasku.LaskunNumero);
+                    // Määritellään polku Laskut-kansioon
+                    string projectRoot = System.IO.Path.GetFullPath(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\..\"));
+                    string folderPath = System.IO.Path.Combine(projectRoot, "Laskut");
 
-                    // Luodaan PDF käyttäen täydellistä dataa. 
-                    // Tämä ylikirjoittaa mahdolliset aiemmat tyhjät PDF-tiedostot.
-                    PdfService.LuoPDF(täysiLasku, fullPath);
+                    if (!System.IO.Directory.Exists(folderPath))
+                    {
+                        System.IO.Directory.CreateDirectory(folderPath);
+                    }
+
+                    string fileName = $"Lasku_{listaltaValittu.LaskunNumero}.pdf";
+                    string fullPath = System.IO.Path.Combine(folderPath, fileName);
+
+                    // 2. Haetaan laskun TÄYDELLISET tiedot tietokannasta (sis. tuoterivit)
+                    // Koska listanäkymän oliossa ei välttämättä ole tuoterivejä ladattuna
+                    Lasku täysiLasku = Tietokanta.HaeLasku(listaltaValittu.LaskunNumero);
+
+                    if (täysiLasku != null)
+                    {
+                        // Varmistetaan rivit
+                        täysiLasku.Tuotteet = Tietokanta.HaeTuotteetLaskulle(täysiLasku.LaskunNumero);
+
+                        // Luodaan PDF
+                        PdfService.LuoPDF(täysiLasku, fullPath);
+
+                        // Avataan PDF
+                        System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(fullPath) { UseShellExecute = true });
+                    }
+                    else
+                    {
+                        MessageBox.Show("Laskun tietojen haku epäonnistui.");
+                    }
                 }
-
-                // Avataan valmis PDF-tiedosto oletusohjelmalla
-                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(fullPath) { UseShellExecute = true });
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Virhe PDF:n avaamisessa tai luomisessa: {ex.Message}");
+                MessageBox.Show($"Virhe PDF:n luonnissa: {ex.Message}");
+            }
+        }
+
+        private void PoistaLaskuRivi_Click(object sender, RoutedEventArgs e)
+        {
+            // MUUTOS 1: Tarkistetaan, että rivi on tyyppiä 'Lasku', ei 'Tuote'
+            if (sender is Button button && button.DataContext is Lasku valittuLasku)
+            {
+                // MUUTOS 2: Laskulla ID on 'LaskunNumero', ei 'Tuote_ID'
+                int id = valittuLasku.LaskunNumero;
+
+                MessageBoxResult result = MessageBox.Show(
+                    $"Haluatko varmasti poistaa laskun numero {id}?\n\nTämä poistaa laskun pysyvästi.",
+                    "Vahvista poisto",
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Warning);
+
+                if (result == MessageBoxResult.Yes)
+                {
+                    try
+                    {
+                        // MUUTOS 3: Kutsutaan laskun poistoa
+                        bool onnistui = Tietokanta.PoistaLasku(id);
+
+                        if (onnistui)
+                        {
+                            MessageBox.Show("Lasku poistettu onnistuneesti.");
+
+                            // Päivitetään lista (DataGridin nimi on koodissasi 'TuoteLista' vaikka siinä on laskuja)
+                            TuoteLista.ItemsSource = Tietokanta.HaeKaikkiLaskut();
+                        }
+                        else
+                        {
+                            MessageBox.Show("Poisto epäonnistui.");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"Virhe: {ex.Message}");
+                    }
+                }
             }
         }
 

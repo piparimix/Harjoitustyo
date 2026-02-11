@@ -102,16 +102,94 @@
                     Width="*"
                     Binding="{Binding Yhteensä, StringFormat={}{0:C}}"
                     Header="Yhteensä" />
-                <DataGridHyperlinkColumn
-                    Width="2*"
-                    Binding="{Binding PDFPolku}"
-                    Header="Lataa PDF">
-                    <DataGridHyperlinkColumn.ElementStyle>
-                        <Style TargetType="TextBlock">
-                            <EventSetter Event="Hyperlink.RequestNavigate" Handler="OpenPDF_Click" />
-                        </Style>
-                    </DataGridHyperlinkColumn.ElementStyle>
-                </DataGridHyperlinkColumn>
+                <DataGridTemplateColumn Header="Lataa PDF" Width="Auto">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button Content="Avaa PDF"
+                    Click="AvaaPDFRivi_Click"
+                    ToolTip="Luo ja avaa PDF-lasku"
+                    FontSize="12"
+                    Padding="5,2"
+                    Height="Auto"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center">
+
+                                <Button.Style>
+                                    <Style TargetType="Button">
+                                        <Setter Property="Cursor" Value="Hand"/>
+                                        <Setter Property="Background" Value="#E0F7FA"/>
+                                        <Setter Property="Foreground" Value="#006064"/>
+                                        <Setter Property="BorderBrush" Value="#B2EBF2"/>
+                                        <Setter Property="BorderThickness" Value="1"/>
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="Button">
+                                                    <Border Background="{TemplateBinding Background}" 
+                                            BorderBrush="{TemplateBinding BorderBrush}"
+                                            BorderThickness="{TemplateBinding BorderThickness}"
+                                            CornerRadius="4"
+                                            Padding="{TemplateBinding Padding}">
+                                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                    </Border>
+                                                    <ControlTemplate.Triggers>
+                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                            <Setter Property="Background" Value="#B2EBF2"/>
+                                                        </Trigger>
+                                                    </ControlTemplate.Triggers>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Width="Auto" Header="Poista">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button
+                                Height="Auto"
+                                Padding="5,2"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Click="PoistaLaskuRivi_Click"
+                                Content="Poista"
+                                FontSize="12"
+                                ToolTip="Poista tämä lasku">
+
+                                <Button.Style>
+                                    <Style TargetType="Button">
+                                        <Setter Property="Cursor" Value="Hand" />
+                                        <Setter Property="Background" Value="#FFEEEE" />
+                                        <Setter Property="Foreground" Value="Red" />
+                                        <Setter Property="BorderBrush" Value="LightPink" />
+                                        <Setter Property="BorderThickness" Value="1" />
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="Button">
+                                                    <Border
+                                                        Padding="{TemplateBinding Padding}"
+                                                        Background="{TemplateBinding Background}"
+                                                        BorderBrush="{TemplateBinding BorderBrush}"
+                                                        BorderThickness="{TemplateBinding BorderThickness}"
+                                                        CornerRadius="4">
+                                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                    </Border>
+                                                    <ControlTemplate.Triggers>
+                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                            <Setter Property="Background" Value="#FFCDCD" />
+                                                        </Trigger>
+                                                    </ControlTemplate.Triggers>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
             </DataGrid.Columns>
         </DataGrid>
 
