@@ -16,14 +16,15 @@ namespace Harjoitustyö
     {
         public Muokkaa_Lasku()
         {
-
+            // Alustetaan tuotelista, jos se ei ole vielä alustettu. Tämä varmistaa, että laskun muokkausikkunalla on aina käytettävissä päivitetty tuotelista.
             if (Uusi_Lasku.VarastoTuotteet == null || Uusi_Lasku.VarastoTuotteet.Count == 0)
             {
                 Uusi_Lasku.VarastoTuotteet = Tietokanta.HaeKaikkiTuotteet();
-            }
+            }           
             InitializeComponent();
         }
 
+        // peruutus painikkeen toteutus, joka avaa päävalikon ikkunan ja sulkee nykyisen ikkunan ilman, että muutokset tallennetaan.
         private void btnPeruuta_Click(object sender, RoutedEventArgs e)
         {
             Päävalikko myWindow = new Päävalikko();
@@ -31,6 +32,7 @@ namespace Harjoitustyö
             this.Close();
         }
 
+        // Tallennus painikkeen toteutus, joka päivittää laskun tietokantaan. Ensin tarkistetaan, että DataContext on Lasku-tyyppinen olio, ja sitten kutsutaan Tietokanta-luokan PaivitaLasku-metodia.
         private void btnTallenna_Click(object sender, RoutedEventArgs e)
         {
             if (this.DataContext is Lasku muokattuLasku)
@@ -49,19 +51,20 @@ namespace Harjoitustyö
             }
         }
 
+        // Toteutetaan haku laskun numerolla -painikkeelle, joka hakee laskun sen numeron perusteella.
         private void btnHae_Click(object sender, RoutedEventArgs e)
         {
             if (int.TryParse(txtLaskunNumero.Text, out int id))
             {
-                // 2. Haetaan laskun perustiedot tietokannasta
+                // Haetaan laskun perustiedot tietokannasta
                 Lasku haettuLasku = Tietokanta.HaeLasku(id);
 
                 if (haettuLasku != null)
                 {
-                    // 3. Haetaan laskulle kuuluvat tuotteet (käytetään olemassa olevaa metodia)
+                    // Haetaan laskulle kuuluvat tuotteet
                     haettuLasku.Tuotteet = Tietokanta.HaeTuotteetLaskulle(id);
 
-                    // 4. Asetetaan ikkunan DataContext löydetyksi laskuksi.
+                    // Asetetaan ikkunan DataContext löydetyksi laskuksi.
                     BarcodeImage.Source = Barcode.GenerateBarcode(haettuLasku.LaskunNumero.ToString());
                     this.DataContext = haettuLasku;
                     PäivitäSumma();
@@ -77,7 +80,7 @@ namespace Harjoitustyö
             }
         }
 
-        // 5. Päivitetään ikkunan summa, jos lasku ja tuotteet on haettu onnistuneesti.
+        // Päivitetään ikkunan summa, jos lasku ja tuotteet on haettu onnistuneesti.
         public void PäivitäSumma()
         {
             if (this.DataContext is Lasku nykyinenLasku && nykyinenLasku.Tuotteet != null)
@@ -91,6 +94,7 @@ namespace Harjoitustyö
             }
         }
 
+        // Toteutetaan haku nimellä -painikkeelle, joka hakee laskun asiakkaan nimen perusteella. 
         private void btnHaeNimella_Click(object sender, RoutedEventArgs e)
         {
             string nimi = txtAsiakasNimi.Text;

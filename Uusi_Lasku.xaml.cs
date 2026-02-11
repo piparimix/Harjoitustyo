@@ -4,7 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using Harjoitustyö; // Tärkeä: Ottaa käyttöön Luokat.cs ja Tietokanta.cs
+using Harjoitustyö;
 
 namespace Harjoitustyö
 {
@@ -17,32 +17,33 @@ namespace Harjoitustyö
         public Lasku Newlasku { get; set; } = new Lasku();
 
         public Uusi_Lasku()
-        {         
+        {
+            // Alustetaan tuotelista hakemalla tuotteet tietokannasta
+            VarastoTuotteet = Tietokanta.HaeKaikkiTuotteet();
+
+            // Alustetaan komponentit ja asetetaan laskun numero sekä viivakoodi
+            InitializeComponent();
             try
             {
-                // 1. Ladataan tuotteet tietokannasta alasvetovalikkoa varten
-                VarastoTuotteet = Tietokanta.HaeKaikkiTuotteet();
-
-                // 2. Haetaan seuraava vapaa laskunumero
+                
                 int seuraavaNumero = Tietokanta.HaeSeuraavaLaskunNumero();
                 Newlasku.LaskunNumero = seuraavaNumero;
 
-                // 3. Generoidaan viivakoodi (varmista että Barcode-luokka on olemassa)
+                // Nyt BarcodeImage on olemassa ja sille voidaan asettaa lähde
                 if (BarcodeImage != null)
                 {
                     BarcodeImage.Source = Barcode.GenerateBarcode(seuraavaNumero.ToString());
                 }
 
-                // 4. Asetetaan DataContext, jotta XAML näkee tiedot
                 this.DataContext = Newlasku;
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Virhe alustuksessa: {ex.Message}");
             }
-            InitializeComponent();
         }
 
+        // Tallenna-painikkeen klikkaus tapahtuma, kutsuu Tietokanta-luokan tallennusmetodia ja palaa päävalikkoon onnistumisen jälkeen 
         private void Tallenna_Click(object sender, RoutedEventArgs e)
         {
             if (!OnkoTiedotKelvolliset()) return;
@@ -54,20 +55,21 @@ namespace Harjoitustyö
             {
                 MessageBox.Show("Lasku tallennettu onnistuneesti!");
 
-                // Palataan päävalikkoon (varmista että Päävalikko-ikkuna on olemassa)
+                // Palataan päävalikkoon
                 Päävalikko MyWindow = new Päävalikko();
                 MyWindow.Show();
                 this.Close();
             }
         }
 
+        // "Tallenna ja luo PDF" -painikkeen klikkaus tapahtuma, joka luo PDF:n, avaa sen ja tallentaa laskun tietokantaan ja palaa päävalikkoon onnistumisen jälkeen
         private void ToPDF_AND_Save_Click(object sender, RoutedEventArgs e)
         {
             if (!OnkoTiedotKelvolliset()) return;
 
             try
             {
-                // Määritellään polku Laskut-kansioon
+                // Määritellään polku Laskut-kansioon, joka sijaitsee projektin juurihakemistossa
                 string projectRoot = System.IO.Path.GetFullPath(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\..\"));
                 string folderPath = System.IO.Path.Combine(projectRoot, "Laskut");
 
@@ -85,7 +87,7 @@ namespace Harjoitustyö
                 // Avataan PDF
                 System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(fullPath) { UseShellExecute = true });
 
-                // Tallennetaan kantaan
+                // Tallennetaan tietokantaan
                 bool onnistui = Tietokanta.TallennaLasku(Newlasku);
 
                 if (onnistui)
@@ -102,6 +104,7 @@ namespace Harjoitustyö
             }
         }
 
+        // Metodi, joka tarkistaa, että kaikki tarvittavat tiedot on syötetty ennen tallennusta tai PDF:n luontia. kutsutaan Tallenna_Click ja ToPDF_AND_Save_Click tapahtumissa.
         private bool OnkoTiedotKelvolliset()
         {
             // Tarkistetaan asiakastiedot
@@ -132,6 +135,7 @@ namespace Harjoitustyö
             return true;
         }
 
+        // "Peruuta" -painikkeen klikkaus tapahtuma, joka palaa päävalikkoon ilman tallennusta
         private void Cancel_Click(object sender, RoutedEventArgs e)
         {
             Päävalikko MyWindow = new Päävalikko();
@@ -139,6 +143,7 @@ namespace Harjoitustyö
             this.Close();
         }
 
+        // Metodi, joka päivittää laskun summan näytölle. Kutsutaan DataGridin RowEditEnding-tapahtumassa, jotta summa päivittyy aina, kun tuoteriviä muokataan.
         public void PäivitäSumma()
         {
             if (Newlasku != null && Newlasku.Tuotteet != null)
@@ -148,6 +153,7 @@ namespace Harjoitustyö
             }
         }
 
+        // DataGridin RowEditEnding-tapahtuma, joka kutsuu PäivitäSumma-metodia, jotta summa päivittyy aina, kun tuoteriviä muokataan.
         private void DataGrid_RowEditEnding(object sender, DataGridRowEditEndingEventArgs e)
         {
             // Päivitetään summa viiveellä, jotta uudet arvot ehtivät mukaan

@@ -15,11 +15,8 @@ namespace Harjoitustyö
         public static byte[] GetBarcodeBytes(string data)
         {
             string muokattuData = MuotoileData(data);
-
             BarcodeStandard.Barcode b = new BarcodeStandard.Barcode();
-            // Huom: Code128 on hyvä valinta aakkosnumeeriselle datalle
             var img = b.Encode(BarcodeStandard.Type.Code128, muokattuData, SkiaSharp.SKColors.Black, SkiaSharp.SKColors.White, 200, 80);
-
             using (var encoded = img.Encode(SkiaSharp.SKEncodedImageFormat.Png, 100))
             {
                 return encoded.ToArray();

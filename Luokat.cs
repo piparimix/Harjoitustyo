@@ -105,7 +105,7 @@ namespace Harjoitustyö
         }
     }
 
-    // --- LASKURIVI (Laskun rivi) ---
+    // --- LASKURIVI  ---
     public class Laskurivi : INotifyPropertyChanged, IDataErrorInfo
     {
         public int Laskurivi_ID { get; set; }
@@ -122,6 +122,7 @@ namespace Harjoitustyö
             }
         }
 
+        // Kun Tuote_ID asetetaan, haetaan siihen liittyvät tiedot varastotuotteista
         private void HaeTuotetiedot()
         {
             // Haetaan tiedot Uusi_Lasku -ikkunan staattisesta varastolistasta
@@ -168,6 +169,7 @@ namespace Harjoitustyö
             set { _a_hinta = value; OnPropertyChanged("A_Hinta"); OnPropertyChanged("Yhteensä"); OnPropertyChanged("ALV_Euro"); }
         }
 
+        // Oletetaan, että ALV on sama kaikille tuotteille, mutta se voidaan hakea varastotuotteesta, jos halutaan eri ALV-kantoja
         private float _alv = 24;
         public float ALV { get { return _alv; } set { _alv = value; OnPropertyChanged("ALV"); } }
 
@@ -200,6 +202,7 @@ namespace Harjoitustyö
         public string Postinumero { get; set; } = "00100 Helsinki";
     }
 
+    // Asiakas-luokka, joka sisältää asiakkaan tiedot ja toteuttaa IDataErrorInfo-rajapinnan tietojen validointia varten. Validointi tarkistaa, että nimi ja osoite eivät ole tyhjiä.
     public class Asiakas : IDataErrorInfo
     {
         public string Nimi { get; set; }
@@ -213,6 +216,7 @@ namespace Harjoitustyö
             {
                 if (columnName == "Nimi" && string.IsNullOrWhiteSpace(Nimi)) return "Pakollinen";
                 if (columnName == "Osoite" && string.IsNullOrWhiteSpace(Osoite)) return "Pakollinen";
+                if (columnName == "Postinumero" && string.IsNullOrWhiteSpace(Postinumero)) return "Pakollinen";
                 return null;
             }
         }
