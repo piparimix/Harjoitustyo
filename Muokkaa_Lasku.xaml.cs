@@ -39,9 +39,6 @@ namespace Harjoitustyö
         // Tallennus painikkeen toteutus, joka päivittää laskun tietokantaan. Ensin tarkistetaan, että DataContext on Lasku-tyyppinen olio, ja sitten kutsutaan Tietokanta-luokan PaivitaLasku-metodia.
         private void btnTallenna_Click(object sender, RoutedEventArgs e)
         {
-
-            
-
             if (this.DataContext is Lasku muokattuLasku)
             {
                 if (muokattuLasku.Eräpäivä < muokattuLasku.Päiväys)

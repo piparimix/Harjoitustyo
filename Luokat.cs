@@ -38,8 +38,8 @@ namespace Harjoitustyö
             set { _a_hinta = value; OnPropertyChanged("A_Hinta"); }
         }
 
-        private float _alv = 24;
-        public float ALV
+        private decimal _alv = 25.5m;
+        public decimal ALV
         {
             get { return _alv; }
             set { _alv = value; OnPropertyChanged("ALV"); }
@@ -170,10 +170,10 @@ namespace Harjoitustyö
         }
 
         // Oletetaan, että ALV on sama kaikille tuotteille, mutta se voidaan hakea varastotuotteesta, jos halutaan eri ALV-kantoja
-        private float _alv = 24;
-        public float ALV { get { return _alv; } set { _alv = value; OnPropertyChanged("ALV"); } }
+        private decimal _alv = 25.5m;
+        public decimal ALV { get { return _alv; } set { _alv = value; OnPropertyChanged("ALV"); } }
 
-        public decimal ALV_Euro { get { return (A_Hinta * ((decimal)ALV / 100m)) * Määrä; } }
+        public decimal ALV_Euro { get { return (A_Hinta * (ALV / 100m)) * Määrä; } }
         public decimal Yhteensä { get { return (Määrä * A_Hinta) + ALV_Euro; } }
 
         public string this[string columnName]

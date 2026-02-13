@@ -347,7 +347,7 @@ namespace Harjoitustyö
                                 Määrä = r.GetInt32("määrä"),
                                 Yksikkö = r.GetString("yksikkö"),
                                 A_Hinta = r.GetDecimal("a_hinta"),
-                                ALV = r.GetFloat("alv")
+                                ALV = r.GetDecimal("alv")
                             });
                         }
                     }
@@ -393,7 +393,7 @@ namespace Harjoitustyö
                                 Määrä = r.GetInt32("määrä"),
                                 Yksikkö = r.GetString("yksikkö"),
                                 A_Hinta = r.GetDecimal("a_hinta"),
-                                ALV = r.GetFloat("alv")
+                                ALV = r.GetDecimal("alv")
                             });
                         }
                     }
