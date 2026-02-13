@@ -82,7 +82,7 @@ namespace Harjoitustyö
                                 määrä INT DEFAULT 0,
                                 yksikkö VARCHAR(20),
                                 a_hinta DECIMAL(10, 2),
-                                alv FLOAT
+                                alv DECIMAL(5, 2)
                             );";
                         cmd.ExecuteNonQuery();
 
@@ -97,7 +97,7 @@ namespace Harjoitustyö
                                 määrä INT,
                                 yksikkö VARCHAR(20),
                                 a_hinta DECIMAL(10, 2),
-                                alv FLOAT,
+                                alv DECIMAL(5, 2),
                                 FOREIGN KEY (lasku_id) REFERENCES Lasku(LaskunNumero) ON DELETE CASCADE,
                                 FOREIGN KEY (tuote_id) REFERENCES Tuote(tuote_id) ON DELETE SET NULL
                             );";
@@ -145,7 +145,8 @@ namespace Harjoitustyö
                         decimal randomPrice = Convert.ToDecimal(rnd.Next(10, 200));
 
                         //Käytetään parametreja tai InvariantCulture hinnassa SQL-virheiden välttämiseksi
-                        cmd.CommandText = $"INSERT INTO Tuote (nimi, yksikkö, a_hinta, alv, määrä) VALUES ('{prodName}', '{randomUnit}', {randomPrice.ToString(System.Globalization.CultureInfo.InvariantCulture)}, 24, 100)";
+                        cmd.CommandText = $"INSERT INTO Tuote (nimi, yksikkö, a_hinta, alv, määrä) VALUES ('{prodName}', '{randomUnit}', " +
+                            $"{randomPrice.ToString(System.Globalization.CultureInfo.InvariantCulture)}, 25.5, 100)";
                         cmd.ExecuteNonQuery();
                         createdProductIds.Add((int)cmd.LastInsertedId);
                     }
@@ -174,7 +175,8 @@ namespace Harjoitustyö
                         }
 
                         // Luodaan lasku tälle asiakkaalle
-                        cmd.CommandText = $"INSERT INTO Lasku (Päiväys, Eräpäivä, AsiakasNimi, AsiakasOsoite, AsiakasPosti, LaskuttajaNimi, LaskuttajaOsoite, LaskuttajaPosti, Lisätiedot) VALUES (CURDATE(), CURDATE(), '{cName}', 'Testitie 1', '00100', 'Rakennus Oy', 'Tie 15', '00100', '')";
+                        cmd.CommandText = $"INSERT INTO Lasku (Päiväys, Eräpäivä, AsiakasNimi, AsiakasOsoite, AsiakasPosti, LaskuttajaNimi, LaskuttajaOsoite, LaskuttajaPosti, Lisätiedot)" +
+                            $" VALUES (CURDATE(), CURDATE(), '{cName}', 'Testitie 1', '00100', 'Rakennus Oy', 'Tie 15', '00100', '')";
                         cmd.ExecuteNonQuery();
                         long laskuId = cmd.LastInsertedId;
 
