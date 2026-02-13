@@ -59,8 +59,6 @@ namespace Harjoitustyö
                         cmd.ExecuteNonQuery();
 
                         // 3. Taulut
-
-                        // Lasku
                         cmd.CommandText = @"
                             CREATE TABLE IF NOT EXISTS Lasku (
                                 LaskunNumero INT AUTO_INCREMENT PRIMARY KEY,

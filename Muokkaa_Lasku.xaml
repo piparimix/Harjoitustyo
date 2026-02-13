@@ -7,10 +7,10 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:sys="clr-namespace:System;assembly=mscorlib"
     Title="Rakennus Oy - Muokkaa Laskua"
-    Width="900"
-    Height="600"
-    MinWidth="800"
-    MinHeight="500"
+    Width="Auto"
+    Height="Auto"
+    MinWidth="930"
+    MinHeight="550"
     Background="GhostWhite"
     mc:Ignorable="d">
 
@@ -75,8 +75,7 @@
                     <TextBlock
                         Margin="0,0,5,0"
                         VerticalAlignment="Center"
-                        Foreground="Gray"
-                        Text="Nro:" />
+                        Foreground="Gray" />
                     <TextBox
                         x:Name="txtLaskunNumero"
                         MinWidth="80"
@@ -85,7 +84,8 @@
                         Background="White"
                         BorderBrush="Gray"
                         BorderThickness="1"
-                        FontWeight="Bold" />
+                        FontWeight="Bold"
+                        Text="{Binding LaskunNumero}" />
                     <Button
                         x:Name="btnHae"
                         Height="28"
@@ -233,13 +233,11 @@
                 </Grid>
             </GroupBox>
             <GroupBox Grid.Column="2" Header="Selaa">
-                <StackPanel
-                    VerticalAlignment="Center"
-                    Orientation="Vertical">
+                <StackPanel VerticalAlignment="Center" Orientation="Vertical">
                     <Button
                         Width="30"
-                        Click="BtnEdellinen_Click"
                         Padding="3"
+                        Click="BtnEdellinen_Click"
                         Content="&lt;"
                         ToolTip="Edellinen" />
                     <TextBlock
@@ -251,8 +249,8 @@
                         Text="0 / 0" />
                     <Button
                         Width="30"
-                        Click="BtnSeuraava_Click"
                         Padding="3"
+                        Click="BtnSeuraava_Click"
                         Content="&gt;"
                         ToolTip="Seuraava" />
                 </StackPanel>
