@@ -55,7 +55,7 @@ namespace Harjoitustyö
                         cmd.ExecuteNonQuery();
 
                         // 2. Kanta
-                        cmd.CommandText = "CREATE DATABASE IF NOT EXISTS laskutusdb; USE laskutusdb;";
+                        cmd.CommandText = "CREATE DATABASE IF NOT EXISTS laskutusdb CHARACTER SET utf8mb4 COLLATE utf8mb4_swedish_ci; USE laskutusdb;";
                         cmd.ExecuteNonQuery();
 
                         // 3. Taulut
@@ -118,7 +118,9 @@ namespace Harjoitustyö
 
         private static void TestiDataGeneraattori(MySqlConnection conn, MySqlCommand cmd)
         {
+            // Määritellään, kuinka monta laskua luodaan
             int laskujenMaara = 50;
+
             cmd.CommandText = "USE laskutusdb;";
             cmd.ExecuteNonQuery();
 
@@ -127,13 +129,14 @@ namespace Harjoitustyö
             cmd.CommandText = "SELECT COUNT(*) FROM Lasku";
             long count = Convert.ToInt64(cmd.ExecuteScalar());
 
+            // Ajetaan vain, jos tietokanta on tyhjä
             if (count == 0)
             {
                 using (var transaction = conn.BeginTransaction())
                 {
                     cmd.Transaction = transaction;
 
-                    // A. Luodaan tuotteet
+                    // --- 1. Luodaan tuotteet ---
                     string[] prducts = { "Parketin hionta", "Maalaus", "Laminaatti", "Listat", "Tasoite", "Ruuvit", "Sähkötyöt", "Putkityöt", "Siivous", "Kuljetus" };
                     string[] units = { "kpl", "m2", "pkt", "m", "kg", "h" };
                     List<int> createdProductIds = new List<int>();
@@ -143,26 +146,47 @@ namespace Harjoitustyö
                         string randomUnit = units[rnd.Next(units.Length)];
                         decimal randomPrice = Convert.ToDecimal(rnd.Next(10, 200));
 
+                        //Käytetään parametreja tai InvariantCulture hinnassa SQL-virheiden välttämiseksi
                         cmd.CommandText = $"INSERT INTO Tuote (nimi, yksikkö, a_hinta, alv, määrä) VALUES ('{prodName}', '{randomUnit}', {randomPrice.ToString(System.Globalization.CultureInfo.InvariantCulture)}, 24, 100)";
                         cmd.ExecuteNonQuery();
                         createdProductIds.Add((int)cmd.LastInsertedId);
                     }
+                 
+                    // Nimilistat satunnaistusta varten
+                    string[] etunimet = { "Matti", "Pekka", "Liisa", "Maija", "Kalle", "Ville", "Anna", "Eeva", "Jari", "Sari", "Antti", "Minna", "Timo", "Kirsi" };
+                    string[] sukunimet = { "Korhonen", "Virtanen", "Mäkinen", "Nieminen", "Mäkelä", "Hämäläinen", "Laine", "Heikkinen", "Koskinen", "Järvinen", "Lehtonen", "Leinonen" };
 
-                    // B. Luodaan laskut
+                    // Lisätään myös muutama yritys vaihtelun vuoksi
+                    string[] yritykset = { "Rakennus Oy", "Putki & Sähkö Ky", "Kuljetusliike Matkahuolto", "Tmi Siivouspalvelu", "Kiinteistöhuolto K.K.", "Maalausliike Väri" };
+
                     for (int i = 0; i < laskujenMaara; i++)
                     {
-                        string cName = $"Asiakas {i + 1}";
+                        string cName;
+
+                        // Arvotaan: 20% todennäköisyydellä yritys, 80% todennäköisyydellä henkilö
+                        if (rnd.Next(0, 10) < 2)
+                        {
+                            cName = yritykset[rnd.Next(yritykset.Length)];
+                        }
+                        else
+                        {
+                            string etunimi = etunimet[rnd.Next(etunimet.Length)];
+                            string sukunimi = sukunimet[rnd.Next(sukunimet.Length)];
+                            cName = $"{etunimi} {sukunimi}";
+                        }
+
+                        // Luodaan lasku tälle asiakkaalle
                         cmd.CommandText = $"INSERT INTO Lasku (Päiväys, Eräpäivä, AsiakasNimi, AsiakasOsoite, AsiakasPosti, LaskuttajaNimi, LaskuttajaOsoite, LaskuttajaPosti, Lisätiedot) VALUES (CURDATE(), CURDATE(), '{cName}', 'Testitie 1', '00100', 'Rakennus Oy', 'Tie 15', '00100', '')";
                         cmd.ExecuteNonQuery();
                         long laskuId = cmd.LastInsertedId;
 
+                        // --- 3. Luodaan laskurivit ---
                         int riviMaara = rnd.Next(2, 6);
                         for (int j = 0; j < riviMaara; j++)
                         {
                             int prodId = createdProductIds[rnd.Next(createdProductIds.Count)];
                             int qty = rnd.Next(1, 10);
 
-                            // Kopioidaan tiedot Laskuriviin
                             cmd.CommandText = $"INSERT INTO Laskurivi (lasku_id, tuote_id, nimi, määrä, yksikkö, a_hinta, alv) SELECT {laskuId}, tuote_id, nimi, {qty}, yksikkö, a_hinta, alv FROM Tuote WHERE tuote_id = {prodId}";
                             cmd.ExecuteNonQuery();
                         }
@@ -220,7 +244,6 @@ namespace Harjoitustyö
 
                     foreach (var rivi in lasku.Tuotteet)
                     {
-                        // --- UUSI LOGIIKKA ALKAA ---
                         // Jos Tuote_ID on 0 (eli käyttäjä kirjoitti nimen käsin), tallennetaan se ensin Tuote-rekisteriin
                         if (rivi.Tuote_ID == 0 && !string.IsNullOrWhiteSpace(rivi.Nimi))
                         {
@@ -535,7 +558,14 @@ namespace Harjoitustyö
                     string sql = "SELECT * FROM Lasku WHERE AsiakasNimi LIKE @nimi";
                     using (MySqlCommand cmd = new MySqlCommand(sql, conn))
                     {
-                        cmd.Parameters.AddWithValue("@nimi", "%" + nimi + "%");
+                        cmd.CommandText = "SELECT * FROM Lasku WHERE AsiakasNimi LIKE @alku OR AsiakasNimi LIKE @vali";
+
+                        // "Matti%" -> Löytää "Matti Meikäläinen"
+                        cmd.Parameters.AddWithValue("@alku", nimi + "%");
+
+                        // "% Meikäläinen%" -> Löytää "Matti Meikäläinen" (huomaa välilyönti alussa)
+                        cmd.Parameters.AddWithValue("@vali", "% " + nimi + "%");
+
                         using (MySqlDataReader r = cmd.ExecuteReader())
                         {
                             while (r.Read())

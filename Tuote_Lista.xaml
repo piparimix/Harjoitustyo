@@ -106,9 +106,8 @@
                     Header="Hinta" />
                 <DataGridTextColumn
                     Width="*"
-                    Binding="{Binding ALV, Mode=OneWay}"
-                    Header="ALV %"
-                    IsReadOnly="True" />
+                    Binding="{Binding ALV, UpdateSourceTrigger=PropertyChanged}"
+                    Header="ALV %"/>
                 <DataGridTemplateColumn Width="Auto" Header="Poista">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>

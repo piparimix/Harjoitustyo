@@ -70,7 +70,7 @@
             Margin="15,0,15,0"
             Orientation="Horizontal">
 
-            <GroupBox Header="Hae Lasku">
+            <GroupBox Header="Laskun numero">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock
                         Margin="0,0,5,0"
@@ -95,6 +95,7 @@
                         Click="btnHae_Click"
                         Content="Hae" />
                 </StackPanel>
+
             </GroupBox>
 
             <GroupBox Header="Päiväys">
@@ -118,10 +119,13 @@
                     Height="25"
                     Stretch="UniformToFill" />
             </GroupBox>
+
+
         </WrapPanel>
 
         <Grid Grid.Row="2" Margin="15,0">
             <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />
@@ -228,8 +232,33 @@
                         Text="{Binding AsiakasInfo.Postinumero}" />
                 </Grid>
             </GroupBox>
+            <GroupBox Grid.Column="2" Header="Selaa">
+                <StackPanel
+                    VerticalAlignment="Center"
+                    Orientation="Vertical">
+                    <Button
+                        Width="30"
+                        Click="BtnEdellinen_Click"
+                        Padding="3"
+                        Content="&lt;"
+                        ToolTip="Edellinen" />
+                    <TextBlock
+                        x:Name="txtNavigointiInfo"
+                        Margin="10,0"
+                        VerticalAlignment="Center"
+                        FontWeight="Bold"
+                        Foreground="Gray"
+                        Text="0 / 0" />
+                    <Button
+                        Width="30"
+                        Click="BtnSeuraava_Click"
+                        Padding="3"
+                        Content="&gt;"
+                        ToolTip="Seuraava" />
+                </StackPanel>
+            </GroupBox>
             <GroupBox
-                Grid.Column="2"
+                Grid.Column="3"
                 MinWidth="250"
                 MaxWidth="250"
                 Header="Lisätiedot">
@@ -245,7 +274,7 @@
         <GroupBox
             Grid.Row="3"
             Margin="15,10"
-            Header="Laskurivit (Muokkaa)">
+            Header="Laskurivit">
             <DataGrid
                 x:Name="Tuotteet"
                 AlternatingRowBackground="Beige"
@@ -382,6 +411,5 @@
                     Foreground="DarkGreen" />
             </StackPanel>
         </Border>
-
     </Grid>
 </Window>

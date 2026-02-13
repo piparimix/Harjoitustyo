@@ -9,13 +9,12 @@ using static Harjoitustyö.Uusi_Lasku;
 
 namespace Harjoitustyö
 {
-    /// <summary>
-    /// Interaction logic for Muokkaa_Lasku.xaml
-    /// </summary>
+
     public partial class Muokkaa_Lasku : Window
     {
         public Muokkaa_Lasku()
         {
+            
             // Alustetaan tuotelista, jos se ei ole vielä alustettu. Tämä varmistaa, että laskun muokkausikkunalla on aina käytettävissä päivitetty tuotelista.
             if (Uusi_Lasku.VarastoTuotteet == null || Uusi_Lasku.VarastoTuotteet.Count == 0)
             {
@@ -23,6 +22,10 @@ namespace Harjoitustyö
             }           
             InitializeComponent();
         }
+
+        // Käytetään luokassa listaa, johon tallennetaan kaikki nimellä löytyneet laskut, jotta voidaan toteuttaa edellinen/seuraava -nappien toiminnallisuus.
+        private System.Collections.Generic.List<Lasku> _loytyneetLaskut;
+        private int _nykyinenIndeksi = 0;
 
         // peruutus painikkeen toteutus, joka avaa päävalikon ikkunan ja sulkee nykyisen ikkunan ilman, että muutokset tallennetaan.
         private void btnPeruuta_Click(object sender, RoutedEventArgs e)
@@ -37,6 +40,7 @@ namespace Harjoitustyö
         {
             if (this.DataContext is Lasku muokattuLasku)
             {
+
                 // 2. Call the database update method
                 bool onnistui = Tietokanta.PaivitaLasku(muokattuLasku);
 
@@ -101,29 +105,65 @@ namespace Harjoitustyö
 
             if (!string.IsNullOrWhiteSpace(nimi))
             {
-                // 1. Haetaan lista kaikista nimellä löytyvistä laskuista
-                var hakutulokset = Tietokanta.HaeNimella(nimi);
+                var tulokset = Tietokanta.HaeNimella(nimi);
 
-                // 2. Tarkistetaan löytyikö yhtään laskua
-                if (hakutulokset != null && hakutulokset.Count > 0)
+                // TALLENNETAAN TULOKSET LISTAAN
+                _loytyneetLaskut = new System.Collections.Generic.List<Lasku>(tulokset);
+
+                if (_loytyneetLaskut != null && _loytyneetLaskut.Count > 0)
                 {
-                    // 3. Otetaan listan ensimmäinen lasku
-                    Lasku haettuLasku = hakutulokset[0];
-                    haettuLasku.Tuotteet = Tietokanta.HaeTuotteetLaskulle(haettuLasku.LaskunNumero);
-
-                    // 4. Päivitetään käyttöliittymä
-                    BarcodeImage.Source = Barcode.GenerateBarcode(haettuLasku.LaskunNumero.ToString());
-                    this.DataContext = haettuLasku;
-                    PäivitäSumma();
+                    // Näytetään ensimmäinen
+                    PäivitäNäyttö(0);
                 }
                 else
                 {
                     MessageBox.Show("Laskua ei löytynyt nimellä: " + nimi);
+                    if (txtNavigointiInfo != null) txtNavigointiInfo.Text = "0 / 0";
                 }
             }
             else
             {
                 MessageBox.Show("Syötä kelvollinen nimi");
+            }
+        }
+
+        private void BtnEdellinen_Click(object sender, RoutedEventArgs e)
+        {
+            // Tarkistetaan, onko lista olemassa ja voidaanko mennä taaksepäin
+            if (_loytyneetLaskut != null && _nykyinenIndeksi > 0)
+            {
+                PäivitäNäyttö(_nykyinenIndeksi - 1);
+            }
+        }
+
+        private void BtnSeuraava_Click(object sender, RoutedEventArgs e)
+        {
+            // Tarkistetaan, onko lista olemassa ja voidaanko mennä eteenpäin
+            if (_loytyneetLaskut != null && _nykyinenIndeksi < _loytyneetLaskut.Count - 1)
+            {
+                PäivitäNäyttö(_nykyinenIndeksi + 1);
+            }
+        }
+
+        private void PäivitäNäyttö(int uusiIndeksi)
+        {
+            _nykyinenIndeksi = uusiIndeksi;
+            Lasku valittu = _loytyneetLaskut[_nykyinenIndeksi];
+
+            // Haetaan tuotteet, jotta summa lasketaan oikein
+            valittu.Tuotteet = Tietokanta.HaeTuotteetLaskulle(valittu.LaskunNumero);
+
+            this.DataContext = valittu;
+            if (BarcodeImage != null)
+            {
+                BarcodeImage.Source = Barcode.GenerateBarcode(valittu.LaskunNumero.ToString());
+            }
+            PäivitäSumma();
+
+            // Päivitetään infoteksti (esim. "1 / 3")
+            if (txtNavigointiInfo != null)
+            {
+                txtNavigointiInfo.Text = $"{_nykyinenIndeksi + 1} / {_loytyneetLaskut.Count}";
             }
         }
     }

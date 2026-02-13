@@ -33,8 +33,21 @@ namespace Harjoitustyö
 
             if (tuotteet != null)
             {
+
+                foreach (var tuote in tuotteet)
+                {
+                    // Varmistetaan, ettei tallenneta tyhjiä rivejä vahingossa
+                    if (string.IsNullOrWhiteSpace(tuote.Nimi) || string.IsNullOrWhiteSpace(tuote.Yksikkö) || tuote.A_Hinta <= 0)
+                    {
+                        MessageBox.Show("Tuotteella täytyy olla Nimi, Yksikkö ja Hinta", "Virhe", MessageBoxButton.OK, MessageBoxImage.Error);
+                        return; // Lopetetaan tallennus, jos löytyy tyhjä nimi
+                    }
+                }
+
                 int lisatyt = 0;
                 int paivitetyt = 0;
+
+                
 
                 foreach (var tuote in tuotteet)
                 {
@@ -52,11 +65,10 @@ namespace Harjoitustyö
                     else
                     {
                         Tietokanta.PaivitaTuote(tuote);
-                        paivitetyt++;
                     }
                 }
 
-                MessageBox.Show($"Tallennettu!\nUusia tuotteita: {lisatyt}\nPäivitettyjä: {paivitetyt}");
+                MessageBox.Show($"Tallennettu!\nUusia tuotteita: {lisatyt}");
 
                 // Ladataan lista uudelleen, jotta uudet tuotteet saavat ID:t tietokannasta näkyviin
                 LataaTuotteet();
