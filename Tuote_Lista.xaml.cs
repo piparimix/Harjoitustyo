@@ -16,6 +16,7 @@ namespace Harjoitustyö
         private void Back_Click(object sender, RoutedEventArgs e)
         {
             Päävalikko myWindow = new Päävalikko();
+            myWindow.WindowState = this.WindowState;
             myWindow.Show();
             this.Close();
         }

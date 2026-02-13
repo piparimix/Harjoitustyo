@@ -57,6 +57,7 @@ namespace Harjoitustyö
 
                 // Palataan päävalikkoon
                 Päävalikko MyWindow = new Päävalikko();
+                MyWindow.WindowState = this.WindowState;
                 MyWindow.Show();
                 this.Close();
             }
@@ -94,6 +95,7 @@ namespace Harjoitustyö
                 {
                     MessageBox.Show("PDF luotu ja tiedot tallennettu tietokantaan.");
                     Päävalikko MyWindow = new Päävalikko();
+                    MyWindow.WindowState = this.WindowState;
                     MyWindow.Show();
                     this.Close();
                 }
@@ -139,6 +141,7 @@ namespace Harjoitustyö
         private void Cancel_Click(object sender, RoutedEventArgs e)
         {
             Päävalikko MyWindow = new Päävalikko();
+            MyWindow.WindowState = this.WindowState;
             MyWindow.Show();
             this.Close();
         }

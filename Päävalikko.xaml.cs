@@ -16,6 +16,7 @@ namespace Harjoitustyö
         private void Muokkaa_Lasku_Click(object sender, RoutedEventArgs e)
         {
             Muokkaa_Lasku myWindow = new Muokkaa_Lasku();
+            myWindow.WindowState = this.WindowState;
             myWindow.Show();
             this.Close();
         }
@@ -24,13 +25,16 @@ namespace Harjoitustyö
         {
 
             Uusi_Lasku myWindow = new Uusi_Lasku();
+            myWindow.WindowState = this.WindowState;
             myWindow.Show();
+           
             this.Close();
         }
 
         private void Tuotteet_Click(object sender, RoutedEventArgs e)
         {
             Tuote_Lista myWindow = new Tuote_Lista();
+            myWindow.WindowState = this.WindowState;
             myWindow.Show();
             this.Close();
         }
@@ -38,6 +42,7 @@ namespace Harjoitustyö
         private void Kaikki_Lasku_Click(object sender, RoutedEventArgs e)
         {
             Kaikki_Laskut myWindow = new Kaikki_Laskut();
+            myWindow.WindowState = this.WindowState;
             myWindow.Show();
             this.Close();
         }

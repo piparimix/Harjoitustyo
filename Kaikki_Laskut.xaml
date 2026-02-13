@@ -7,11 +7,12 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:sys="clr-namespace:System;assembly=mscorlib"
     Title="Rakennus Oy - Kaikki Laskut"
-    Width="900"
-    Height="600"
+    Width="Auto"
+    Height="Auto"
     MinWidth="800"
     MinHeight="500"
     Background="GhostWhite"
+    WindowState="Maximized"
     mc:Ignorable="d">
 
     <Window.Resources>

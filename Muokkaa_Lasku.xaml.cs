@@ -31,6 +31,7 @@ namespace Harjoitustyö
         private void btnPeruuta_Click(object sender, RoutedEventArgs e)
         {
             Päävalikko myWindow = new Päävalikko();
+            myWindow.WindowState = this.WindowState;
             myWindow.Show();
             this.Close();
         }

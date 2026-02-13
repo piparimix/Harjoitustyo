@@ -7,11 +7,12 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:sys="clr-namespace:System;assembly=mscorlib"
     Title="Rakennus Oy - Uusi Lasku"
-    Width="900"
-    Height="600"
-    MinWidth="800"
-    MinHeight="500"
+    Width="Auto"
+    Height="Auto"
+    MinWidth="930"
+    MinHeight="600"
     Background="GhostWhite"
+    WindowState="Maximized"
     mc:Ignorable="d">
 
     <Window.Resources>
@@ -298,7 +299,7 @@
 
                     <DataGridTextColumn
                         Width="*"
-                        Binding="{Binding Yhteensä, StringFormat={}{0:C}}"
+                        Binding="{Binding Yhteensä, StringFormat={}{0:C}, Mode=OneWay}"
                         Header="Yhteensä" />
                 </DataGrid.Columns>
             </DataGrid>
