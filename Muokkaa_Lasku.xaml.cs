@@ -39,9 +39,16 @@ namespace Harjoitustyö
         // Tallennus painikkeen toteutus, joka päivittää laskun tietokantaan. Ensin tarkistetaan, että DataContext on Lasku-tyyppinen olio, ja sitten kutsutaan Tietokanta-luokan PaivitaLasku-metodia.
         private void btnTallenna_Click(object sender, RoutedEventArgs e)
         {
+
+            
+
             if (this.DataContext is Lasku muokattuLasku)
             {
-
+                if (muokattuLasku.Eräpäivä < muokattuLasku.Päiväys)
+                {
+                    MessageBox.Show("Eräpäivä ei voi olla aiemmin kuin laskun päiväys!", "Virheellinen päivämäärä", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
                 // 2. Call the database update method
                 bool onnistui = Tietokanta.PaivitaLasku(muokattuLasku);
 

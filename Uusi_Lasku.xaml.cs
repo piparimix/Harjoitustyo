@@ -107,8 +107,15 @@ namespace Harjoitustyö
         }
 
         // Metodi, joka tarkistaa, että kaikki tarvittavat tiedot on syötetty ennen tallennusta tai PDF:n luontia. kutsutaan Tallenna_Click ja ToPDF_AND_Save_Click tapahtumissa.
-        private bool OnkoTiedotKelvolliset()
+        public bool OnkoTiedotKelvolliset()
         {
+            // Tarkistetaan, että laskun päiväys ja eräpäivä ovat järkeviä
+            if (Newlasku.Eräpäivä < Newlasku.Päiväys)
+            {
+                MessageBox.Show("Eräpäivä ei voi olla aiemmin kuin laskun päiväys!", "Virheellinen päivämäärä", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return false;
+            }
+
             // Tarkistetaan asiakastiedot
             if (string.IsNullOrWhiteSpace(Newlasku.AsiakasInfo.Nimi) ||
                 string.IsNullOrWhiteSpace(Newlasku.AsiakasInfo.Osoite) ||
