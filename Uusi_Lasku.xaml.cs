@@ -137,7 +137,7 @@ namespace Harjoitustyö
             return true;
         }
 
-        // "Peruuta" -painikkeen klikkaus tapahtuma, joka palaa päävalikkoon ilman tallennusta
+        // Peruuta painikkeen klikkaus tapahtuma, joka palaa päävalikkoon ilman tallennusta
         private void Cancel_Click(object sender, RoutedEventArgs e)
         {
             Päävalikko MyWindow = new Päävalikko();
