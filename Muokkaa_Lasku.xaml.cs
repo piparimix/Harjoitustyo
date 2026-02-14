@@ -207,6 +207,23 @@ namespace Harjoitustyö
                     MessageBox.Show("Tarkista tuoterivit: Nimi, yksikkö tai hinta puuttuu, tai tiedot ovat virheelliset.", "Virhe", MessageBoxButton.OK, MessageBoxImage.Error);
                     return false;
                 }
+                if (rivi.Tuote_ID == 0)
+                {
+                    // Huom: Tässä käytetään Uusi_Lasku -luokan staattista listaa
+                    if (Uusi_Lasku.VarastoTuotteet != null)
+                    {
+                        foreach (var varastoTuote in Uusi_Lasku.VarastoTuotteet)
+                        {
+                            if (varastoTuote.Nimi.Trim().Equals(rivi.Nimi.Trim(), StringComparison.OrdinalIgnoreCase))
+                            {
+                                MessageBox.Show($"Tuote nimellä '{rivi.Nimi}' on jo olemassa varastossa.\n\n" +
+                                                "Valitse tuote pudotusvalikosta, jotta et luo duplikaattia tietokantaan.",
+                                                "Tuote löytyy jo", MessageBoxButton.OK, MessageBoxImage.Warning);
+                                return false;
+                            }
+                        }
+                    }
+                }
             }
 
             return true;

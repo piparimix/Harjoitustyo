@@ -41,7 +41,30 @@ namespace Harjoitustyö
                     if (string.IsNullOrWhiteSpace(tuote.Nimi) || string.IsNullOrWhiteSpace(tuote.Yksikkö) || tuote.A_Hinta <= 0)
                     {
                         MessageBox.Show("Tuotteella täytyy olla Nimi, Yksikkö ja Hinta", "Virhe", MessageBoxButton.OK, MessageBoxImage.Error);
-                        return; // Lopetetaan tallennus, jos löytyy tyhjä nimi
+                        return; // Lopetetaan tallennus, jos löytyy tyhjä nimi, yksikkö tai nolla/hintaa pienempi hinta
+                    }
+                    bool onDuplikaatti = false;
+
+                    // Käydään lista läpi uudestaan ja verrataan nykyistä 'tuote'-riviä muihin
+                    foreach (var toinenTuote in tuotteet)
+                    {
+                        // Varmistetaan, ettei verrata riviä itseensä
+                        if (toinenTuote != tuote)
+                        {
+                            // Tarkistetaan onko nimi sama (ei huomioida isoja/pieniä kirjaimia)
+                            if (toinenTuote.Nimi.Trim().Equals(tuote.Nimi.Trim(), StringComparison.OrdinalIgnoreCase))
+                            {                                                     
+                                    onDuplikaatti = true;
+                                    break;                                
+                            }
+                        }
+                    }
+
+                    if (onDuplikaatti)
+                    {
+                        MessageBox.Show($"Tuote '{tuote.Nimi}' on jo olemassa.\n\nPoista aiempi rivi tai vaihda nimi.",
+                                        "Duplikaatti havaittu", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        return; // Keskeytetään tallennus
                     }
                 }
 

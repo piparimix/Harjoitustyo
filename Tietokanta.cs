@@ -435,13 +435,11 @@ namespace Harjoitustyö
                 cmd.ExecuteNonQuery();
             }
         }
-
         public static void PoistaTuote(int id)
         {
             using (MySqlConnection conn = new MySqlConnection(ConnectionString))
             {
                 conn.Open();
-                // ON DELETE SET NULL kanta-asetuksissa pitää huolen laskuriveistä
                 new MySqlCommand($"DELETE FROM Tuote WHERE tuote_id={id}", conn).ExecuteNonQuery();
             }
         }
