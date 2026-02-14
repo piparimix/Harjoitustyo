@@ -10,7 +10,7 @@ namespace Harjoitustyö
         public Päävalikko()
         {
             InitializeComponent();
-            Tietokanta.AlustaTietokanta();
+            
         }
 
         private void Muokkaa_Lasku_Click(object sender, RoutedEventArgs e)
