@@ -39,8 +39,10 @@ namespace Harjoitustyö
         // Tallennus painikkeen toteutus, joka päivittää laskun tietokantaan. Ensin tarkistetaan, että DataContext on Lasku-tyyppinen olio, ja sitten kutsutaan Tietokanta-luokan PaivitaLasku-metodia.
         private void btnTallenna_Click(object sender, RoutedEventArgs e)
         {
+            
             if (this.DataContext is Lasku muokattuLasku)
             {
+                if (!OnkoTiedotKelvolliset(muokattuLasku)) return;
                 if (muokattuLasku.Eräpäivä < muokattuLasku.Päiväys)
                 {
                     MessageBox.Show("Eräpäivä ei voi olla aiemmin kuin laskun päiväys!", "Virheellinen päivämäärä", MessageBoxButton.OK, MessageBoxImage.Warning);
@@ -170,6 +172,44 @@ namespace Harjoitustyö
             {
                 txtNavigointiInfo.Text = $"{_nykyinenIndeksi + 1} / {_loytyneetLaskut.Count}";
             }
+        }
+
+        private bool OnkoTiedotKelvolliset(Lasku lasku)
+        {
+            // 1. Päivämäärät
+            if (lasku.Eräpäivä < lasku.Päiväys)
+            {
+                MessageBox.Show("Eräpäivä ei voi olla aiemmin kuin laskun päiväys!", "Virheellinen päivämäärä", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return false;
+            }
+
+            // 2. Asiakastiedot
+            if (string.IsNullOrWhiteSpace(lasku.AsiakasInfo.Nimi) ||
+                string.IsNullOrWhiteSpace(lasku.AsiakasInfo.Osoite) ||
+                string.IsNullOrWhiteSpace(lasku.AsiakasInfo.Postinumero))
+            {
+                MessageBox.Show("Täytä asiakastiedot (Nimi, Osoite, Postinumero)!", "Puuttuvat tiedot", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return false;
+            }
+
+            // 3. Onko rivejä?
+            if (lasku.Tuotteet.Count == 0)
+            {
+                MessageBox.Show("Laskulla on oltava vähintään yksi tuoterivi.", "Huomio");
+                return false;
+            }
+
+            // 4. Rivien sisältö (Nimi, Määrä, Hinta, Yksikkö)
+            foreach (var rivi in lasku.Tuotteet)
+            {
+                if (string.IsNullOrEmpty(rivi.Nimi) || rivi.Määrä <= 0 || rivi.A_Hinta <= 0 || string.IsNullOrEmpty(rivi.Yksikkö))
+                {
+                    MessageBox.Show("Tarkista tuoterivit: Nimi, yksikkö tai hinta puuttuu, tai tiedot ovat virheelliset.", "Virhe", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return false;
+                }
+            }
+
+            return true;
         }
     }
 }

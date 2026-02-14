@@ -1,5 +1,5 @@
 ﻿PÄÄVALIKKO
-- Buttonit: Uusi lasku, Tuote lista, Kaikki laskut, Muokkaa laskua, Sulje sovellus
+- Buttons: Uusi lasku, Tuote lista, Kaikki laskut, Muokkaa laskua, Sulje sovellus
 
 
 UUSI LASKU
@@ -13,21 +13,37 @@ UUSI LASKU
 
 * Viivakoodi (automaattisesti generoituva, ReadOnly)
 
-* Asiakas: Nimi, Osoite, Postinumero. kaikki ovat pakollisia kenttiä. 
+* Asiakas: Nimi, Osoite, Postinumero. 
+pakolliset kentät: Kaikki. 
 MAX pituudet: Nimi 30 merkkiä, Osoite 20 merkkiä, Postinumero 20 merkkiä.
 
 * Lisätiedot. Vapaa tekstikenttä, ei pakollinen.
 
-* Laskurivit: Tuotevalikko(Dropdown menu haku ominaisuudella) Tuotteen nimi, Määrä, Yksikkö (Dropdown menu), Hinta, ALV euroina (ReadOnly), Yhteensä (ReadOnly). 
+* Yhteensä, joka näyttää laskun kokonais summan
+
+* Laskurivit datagrid: Tuotevalikko(Dropdown menu haku ominaisuudella) Tuotteen nimi, Määrä, Yksikkö (Dropdown menu), Hinta, ALV euroina (ReadOnly), Yhteensä (ReadOnly). 
 Pakolliset kentät: Tuotteen nimi, Määrä, Yksikkö, Hinta.
 MAX pituude: Tuotteen nimi 50 merkkiä, Määrä 6 numeroa, Hinta 6 numeroa.
 
-* Buttons: Peruuta, Tallenna, Tallenna ja TulostaPDF
+
+- Buttons: Peruuta, Tallenna, Tallenna ja TulostaPDF
 Tulostaessa PDF:ksi, PDF-tiedoston nimi on muotoa "Lasku_[Laskun numero].pdf". PDF-tiedosto tallennetaan sovelluksen juuri kansiossa olevaan kansioon "Laskut".
 
 
 TUOTE LISTA
+- Datagrid, jossa sarakkeet: Tuote ID(ReadOnly), Tuotteen nimi, Yksikkö(DropDown menu), Hinta, ALV €, Poista(Button).
+Mahdollisuus lisätä uusia rivejä, pakolliset kentätä: kaikki.
+
+- Buttons: Tallenna muutokset ja Takaisn
 
 KAIKKI LASKUT 
+- ReadOnly Datagrid, jossa sarakkeet: Laskun ID, Asiakkaan Nimi, Päiväys, Eräpäivä, ALV €, Yhteensä, Lataa PDF(Button), Poista(Button).
+
+- Buttons: Takaisin
 
 MUOKKAA LASKUA
+- sama lomake kuin UUSI LASKU muutamalla lisällä:
+* Haku laskun numerolla
+* Haku Asiakkaan nimellä (haku etsii syötettä etunimen ja sukunimen alusta)
+* Selaa Buttonnit "<" ja ">". välissä info: (Nykyinen lasku)/(haku tulosten määrä)
+* poistettu Tallenna ja Tulosta PDF

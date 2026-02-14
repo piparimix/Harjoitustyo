@@ -1,10 +1,11 @@
-﻿using System;
+﻿using Harjoitustyö;
+using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Security.Policy;
 using System.Windows;
 using System.Windows.Controls;
-using Harjoitustyö;
 
 namespace Harjoitustyö
 {
@@ -121,7 +122,7 @@ namespace Harjoitustyö
                 string.IsNullOrWhiteSpace(Newlasku.AsiakasInfo.Osoite) ||
                 string.IsNullOrWhiteSpace(Newlasku.AsiakasInfo.Postinumero))
             {
-                MessageBox.Show("Täytä asiakastiedot!", "Huomio", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Täytä asiakastiedot (Nimi, Osoite, Postinumero)!", "Huomio", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return false;
             }
 
@@ -135,9 +136,9 @@ namespace Harjoitustyö
             // Tarkistetaan rivien sisältö
             foreach (var rivi in Newlasku.Tuotteet)
             {
-                if (string.IsNullOrEmpty(rivi.Nimi) || rivi.Määrä <= 0)
+                if (string.IsNullOrEmpty(rivi.Nimi) || rivi.Määrä <= 0 || rivi.A_Hinta <= 0 || string.IsNullOrEmpty(rivi.Yksikkö))
                 {
-                    MessageBox.Show("Tarkista tuoterivit: Nimi puuttuu tai määrä on virheellinen.", "Virhe", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show("Tarkista tuoterivit: Nimi, yksikkö tai hinta puuttuu, tai tiedot ovat virheelliset.", "Virhe", MessageBoxButton.OK, MessageBoxImage.Error);
                     return false;
                 }
             }

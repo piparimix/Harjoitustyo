@@ -399,7 +399,7 @@
                     Background="LightPink"
                     BorderBrush="Red"
                     Click="btnPeruuta_Click"
-                    Content="Peruuta"
+                    Content="Takaisin/Peruuta"
                     Foreground="Red" />
                 <Button
                     x:Name="btnTallenna"
