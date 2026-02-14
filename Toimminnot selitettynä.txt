@@ -1,0 +1,33 @@
+﻿PÄÄVALIKKO
+- Buttonit: Uusi lasku, Tuote lista, Kaikki laskut, Muokkaa laskua, Sulje sovellus
+
+
+UUSI LASKU
+- Lomake, jossa kentät: 
+
+* Laskun numero. Automaattisesti generoituva, ReadOnly.
+
+* Päiväys (automaattisesti nykyinen päiväys, mutta muokattavissa)
+
+* Eräpäivä (automaattisesti 30 päivää nykyisestä päiväyksestä, mutta muokattavissa (Ei menneisyyteen))
+
+* Viivakoodi (automaattisesti generoituva, ReadOnly)
+
+* Asiakas: Nimi, Osoite, Postinumero. kaikki ovat pakollisia kenttiä. 
+MAX pituudet: Nimi 30 merkkiä, Osoite 20 merkkiä, Postinumero 20 merkkiä.
+
+* Lisätiedot. Vapaa tekstikenttä, ei pakollinen.
+
+* Laskurivit: Tuotevalikko(Dropdown menu haku ominaisuudella) Tuotteen nimi, Määrä, Yksikkö (Dropdown menu), Hinta, ALV euroina (ReadOnly), Yhteensä (ReadOnly). 
+Pakolliset kentät: Tuotteen nimi, Määrä, Yksikkö, Hinta.
+MAX pituude: Tuotteen nimi 50 merkkiä, Määrä 6 numeroa, Hinta 6 numeroa.
+
+* Buttons: Peruuta, Tallenna, Tallenna ja TulostaPDF
+Tulostaessa PDF:ksi, PDF-tiedoston nimi on muotoa "Lasku_[Laskun numero].pdf". PDF-tiedosto tallennetaan sovelluksen juuri kansiossa olevaan kansioon "Laskut".
+
+
+TUOTE LISTA
+
+KAIKKI LASKUT 
+
+MUOKKAA LASKUA
