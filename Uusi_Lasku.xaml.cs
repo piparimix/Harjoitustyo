@@ -189,5 +189,16 @@ namespace Harjoitustyö
             // Päivitetään summa viiveellä, jotta uudet arvot ehtivät mukaan
             Dispatcher.BeginInvoke(new Action(() => { PäivitäSumma(); }));
         }
+
+        private void PoistaRivi_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button button && button.DataContext is Laskurivi poistettavaRivi)
+            {
+                TuotteetGrid.CancelEdit();
+                TuotteetGrid.CommitEdit();
+                Newlasku.Tuotteet.Remove(poistettavaRivi);
+                PäivitäSumma();
+            }
+        }
     }
 }

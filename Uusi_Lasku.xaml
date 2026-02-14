@@ -217,7 +217,8 @@
                 Foreground="Black"
                 HorizontalGridLinesBrush="Black"
                 ItemsSource="{Binding Tuotteet}"
-                RowEditEnding="DataGrid_RowEditEnding">
+                RowEditEnding="DataGrid_RowEditEnding"
+                x:Name="TuotteetGrid">
 
                 <DataGrid.Resources>
                     <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="LightGray" />
@@ -301,6 +302,47 @@
                         Width="*"
                         Binding="{Binding Yhteensä, StringFormat={}{0:C}, Mode=OneWay}"
                         Header="Yhteensä" />
+                    <DataGridTemplateColumn Width="Auto" Header="Poista">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button
+                                    Padding="8,2"
+                                    Click="PoistaRivi_Click"
+                                    Content="X"
+                                    Cursor="Hand"
+                                    FontSize="12"
+                                    FontWeight="Bold"
+                                    ToolTip="Poista tämä rivi">
+                                    <Button.Style>
+                                        <Style TargetType="Button">
+                                            <Setter Property="Background" Value="LightPink" />
+                                            <Setter Property="Foreground" Value="Red" />
+                                            <Setter Property="BorderBrush" Value="Red" />
+                                            <Setter Property="Template">
+                                                <Setter.Value>
+                                                    <ControlTemplate TargetType="Button">
+                                                        <Border
+                                                            Padding="{TemplateBinding Padding}"
+                                                            Background="{TemplateBinding Background}"
+                                                            BorderBrush="{TemplateBinding BorderBrush}"
+                                                            BorderThickness="1"
+                                                            CornerRadius="4">
+                                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                        </Border>
+                                                    </ControlTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                            <Style.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Background" Value="LightPink" />
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
                 </DataGrid.Columns>
             </DataGrid>
         </GroupBox>

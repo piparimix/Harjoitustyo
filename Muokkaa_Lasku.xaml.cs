@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
 using static Harjoitustyö.Barcode;
 using static Harjoitustyö.PdfService;
 using static Harjoitustyö.Tietokanta;
@@ -227,6 +228,20 @@ namespace Harjoitustyö
             }
 
             return true;
+        }
+        private void PoistaRivi_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button button && button.DataContext is Laskurivi poistettavaRivi)
+            {
+                if (this.DataContext is Lasku nykyinenLasku)
+                {
+                    Tuotteet.CancelEdit();
+                    Tuotteet.CommitEdit();
+
+                    nykyinenLasku.Tuotteet.Remove(poistettavaRivi);
+                    PäivitäSumma();
+                }
+            }
         }
     }
 }
