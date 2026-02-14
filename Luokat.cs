@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq; // Tarvitaan LINQ-kyselyihin (FirstOrDefault)
+using System.Linq;
 
 namespace Harjoitustyö
 {
-    // --- TUOTE (Varastotuote) ---
+    // Tuote-luokka, joka sisältää tuotteen tiedot ja toteuttaa INotifyPropertyChanged-rajapinnan.
+    // Tuotteella on ID, Nimi, Määrä, Yksikkö, A_Hinta ja ALV.
+    // INotifyPropertyChanged toteutus ilmoittaa, kun ominaisuuksien arvot muuttuvat, jotta UI päivittyy automaattisesti.
     public class Tuote : INotifyPropertyChanged
     {
         public int Tuote_ID { get; set; }
@@ -52,7 +54,10 @@ namespace Harjoitustyö
         }
     }
 
-    // --- LASKU ---
+    // Lasku-luokka, joka sisältää laskun tiedot ja toteuttaa INotifyPropertyChanged-rajapinnan.
+    // Laskulla on Päiväys, Eräpäivä, LaskunNumero, lista Laskurivejä, LaskuttajaInfo ja AsiakasInfo.
+    // Laskulla on myös Yhteensä- ja ALV_Euro_Yhteensä-laskukaavat, jotka laskevat laskun kokonaissumman ja ALV:n euroina.
+    // INotifyPropertyChanged toteutus ilmoittaa, kun ominaisuuksien arvot muuttuvat, jotta UI päivittyy automaattisesti.
     public class Lasku : INotifyPropertyChanged
     {
         public DateTime Päiväys { get; set; } = DateTime.Now;
@@ -65,7 +70,6 @@ namespace Harjoitustyö
             set { _laskunNumero = value; OnPropertyChanged("LaskunNumero"); }
         }
 
-        // Laskulla on lista Laskurivejä
         public ObservableCollection<Laskurivi> Tuotteet { get; set; } = new ObservableCollection<Laskurivi>();
 
         public Laskuttaja LaskuttajaInfo { get; set; } = new Laskuttaja();
@@ -105,7 +109,10 @@ namespace Harjoitustyö
         }
     }
 
-    // --- LASKURIVI  ---
+    // Laskurivi-luokka, joka sisältää laskurivin tiedot ja toteuttaa INotifyPropertyChanged- ja IDataErrorInfo-rajapinnat.
+    // Laskurivi sisältää Tuote_ID:n, Nimen, Määrän, Yksikön, A_Hinnan, ALV:n, ALV_Euron ja Yhteensä-laskukaavat.
+    // Kun Tuote_ID asetetaan, haetaan siihen liittyvät tiedot varastotuotteista ja päivitetään Nimi, Yksikkö, A_Hinta ja ALV.
+    // Kun Määrä tai A_Hinta muuttuu, päivitetään Yhteensä ja ALV_Euro.
     public class Laskurivi : INotifyPropertyChanged, IDataErrorInfo
     {
         public int Laskurivi_ID { get; set; }
@@ -149,6 +156,7 @@ namespace Harjoitustyö
             }
         }
 
+        // Nimi on varastotuotteista haettava tieto, joka asetetaan Tuote_ID:n perusteella. Kun Nimi muuttuu, päivitetään UI.
         private string _nimi;
         public string Nimi { get { return _nimi; } set { _nimi = value; OnPropertyChanged("Nimi"); } }
 
@@ -169,13 +177,16 @@ namespace Harjoitustyö
             set { _a_hinta = value; OnPropertyChanged("A_Hinta"); OnPropertyChanged("Yhteensä"); OnPropertyChanged("ALV_Euro"); }
         }
 
-        // Oletetaan, että ALV on sama kaikille tuotteille, mutta se voidaan hakea varastotuotteesta, jos halutaan eri ALV-kantoja
+        // Oletetaan, että ALV on sama kaikille tuotteille.
+        // mutta Sitä voidaan muuttaa tuote listassa jokaisen tuotteen kohdalla, mutta oletuksena se on 25.5%.
         private decimal _alv = 25.5m;
         public decimal ALV { get { return _alv; } set { _alv = value; OnPropertyChanged("ALV"); } }
 
         public decimal ALV_Euro { get { return (A_Hinta * (ALV / 100m)) * Määrä; } }
         public decimal Yhteensä { get { return (Määrä * A_Hinta) + ALV_Euro; } }
 
+
+        // IDataErrorInfo toteutus, joka tarkistaa, että Nimi ei ole tyhjä ja Määrä on suurempi kuin 0. Jos jokin näistä ehdoista ei täyty, palautetaan virheilmoitus.
         public string this[string columnName]
         {
             get
@@ -185,6 +196,7 @@ namespace Harjoitustyö
                 return null;
             }
         }
+
         public string Error { get { return null; } }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -194,7 +206,7 @@ namespace Harjoitustyö
         }
     }
 
-    // --- APULUOKAT ---
+    // Laskuttaja-luokka, joka sisältää laskuttajan tiedot. Oletuksena nimi on "Rakennus OY", osoite "Rakennustie 15" ja postinumero "00100 Helsinki".
     public class Laskuttaja
     {
         public string Nimi { get; set; } = "Rakennus OY";
@@ -210,6 +222,7 @@ namespace Harjoitustyö
         public string Postinumero { get; set; }
         public string Lisätiedot { get; set; } = "";
 
+        // IDataErrorInfo toteutus, joka tarkistaa, että Nimi, Osoite ja Postinumero eivät ole tyhjiä. Jos jokin näistä on tyhjä, palautetaan virheilmoitus "Pakollinen".
         public string this[string columnName]
         {
             get
