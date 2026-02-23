@@ -196,6 +196,7 @@ namespace Harjoitustyö
             }
         }
 
+        // hakee laskunumeron tietokannasta, jotta voidaan varmistaa, että uusi lasku saa oikean numeron (AUTO_INCREMENT)
         public static int HaeSeuraavaLaskunNumero()
         {
             try
@@ -210,8 +211,7 @@ namespace Harjoitustyö
             catch { return 100000; }
         }
 
-        // --- LASKUJEN KÄSITTELY ---
-
+        // Laskun tallennus metodi
         public static bool TallennaLasku(Lasku lasku)
         {
             using (MySqlConnection conn = new MySqlConnection(ConnectionString))
@@ -260,8 +260,7 @@ namespace Harjoitustyö
                                 rivi.Tuote_ID = (int)tCmd.LastInsertedId;
                             }
                         }
-                        // --- UUSI LOGIIKKA PÄÄTTYY ---
-
+                                           
                         MySqlCommand rCmd = new MySqlCommand(rowSql, conn);
                         rCmd.Parameters.AddWithValue("@lid", lasku.LaskunNumero);
                         rCmd.Parameters.AddWithValue("@tid", rivi.Tuote_ID == 0 ? (object)DBNull.Value : rivi.Tuote_ID);
@@ -290,6 +289,7 @@ namespace Harjoitustyö
             }
         }
 
+        // Hakee kaikki laskut tietokannasta.
         public static ObservableCollection<Lasku> HaeKaikkiLaskut()
         {
             var lista = new ObservableCollection<Lasku>();
@@ -328,6 +328,7 @@ namespace Harjoitustyö
             return lista;
         }
 
+        // Hakee tietyn laskun Tuotteet tietokannasta.
         public static ObservableCollection<Laskurivi> HaeTuotteetLaskulle(int laskuID)
         {
             var rivit = new ObservableCollection<Laskurivi>();
@@ -358,6 +359,7 @@ namespace Harjoitustyö
             return rivit;
         }
 
+        // Poistaa laskun ja siihen liittyvät rivit tietokannasta.
         public static bool PoistaLasku(int id)
         {
             using (MySqlConnection conn = new MySqlConnection(ConnectionString))
@@ -374,8 +376,7 @@ namespace Harjoitustyö
             }
         }
 
-        // --- TUOTTEIDEN KÄSITTELY (VARASTO) ---
-
+        // Hakee kaikki tuotteet tietokannasta.
         public static ObservableCollection<Tuote> HaeKaikkiTuotteet()
         {
             var tuotteet = new ObservableCollection<Tuote>();
@@ -405,6 +406,7 @@ namespace Harjoitustyö
             return tuotteet;
         }
 
+        // lisää uuden tuotteen tietokantaan. jotta tuo
         public static void LisaaTuote(Tuote tuote)
         {
             using (MySqlConnection conn = new MySqlConnection(ConnectionString))
@@ -420,6 +422,7 @@ namespace Harjoitustyö
             }
         }
 
+        // Päivittää olemassa olevan tuotteen tietokannassa. Tuote_ID:n on oltava määritettynä, muuten päivitetään väärää riviä tai ei mitään.
         public static void PaivitaTuote(Tuote tuote)
         {
             using (MySqlConnection conn = new MySqlConnection(ConnectionString))
