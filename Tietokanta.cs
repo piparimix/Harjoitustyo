@@ -150,7 +150,7 @@ namespace Harjoitustyö
                         cmd.ExecuteNonQuery();
                         createdProductIds.Add((int)cmd.LastInsertedId);
                     }
-                 
+
                     // Nimilistat satunnaistusta varten
                     string[] etunimet = { "Matti", "Pekka", "Liisa", "Maija", "Kalle", "Ville", "Anna", "Eeva", "Jari", "Sari", "Antti", "Minna", "Timo", "Kirsi" };
                     string[] sukunimet = { "Korhonen", "Virtanen", "Mäkinen", "Nieminen", "Mäkelä", "Hämäläinen", "Laine", "Heikkinen", "Koskinen", "Järvinen", "Lehtonen", "Leinonen" };
@@ -258,9 +258,19 @@ namespace Harjoitustyö
 
                                 // Päivitetään rivin Tuote_ID vastaamaan uutta tietokantariiviä
                                 rivi.Tuote_ID = (int)tCmd.LastInsertedId;
+
+                                Tuote uusiTuote = new Tuote
+                                {
+                                    Tuote_ID = (int)tCmd.LastInsertedId,
+                                    Nimi = rivi.Nimi,
+                                    Yksikkö = rivi.Yksikkö,
+                                    A_Hinta = rivi.A_Hinta,
+                                    ALV = rivi.ALV
+                                };
+                                Uusi_Lasku.VarastoTuotteet.Add(uusiTuote);
                             }
                         }
-                                           
+
                         MySqlCommand rCmd = new MySqlCommand(rowSql, conn);
                         rCmd.Parameters.AddWithValue("@lid", lasku.LaskunNumero);
                         rCmd.Parameters.AddWithValue("@tid", rivi.Tuote_ID == 0 ? (object)DBNull.Value : rivi.Tuote_ID);
@@ -272,11 +282,9 @@ namespace Harjoitustyö
                         rCmd.ExecuteNonQuery();
                     }
 
-                    // Päivitetään staattinen tuotelista, jotta uusi tuote näkyy heti valikoissa
                     if (Uusi_Lasku.VarastoTuotteet != null)
-                    {
-                        // Tämän voi tehdä myös hakemalla kannasta uudestaan, mutta tämä on nopeampi:
-                        // Uusi_Lasku.VarastoTuotteet = HaeKaikkiTuotteet(); 
+                    {                     
+                      
                     }
 
                     return true;
@@ -367,7 +375,6 @@ namespace Harjoitustyö
                 try
                 {
                     conn.Open();
-                    // Foreign Key CASCADE hoitaa rivien poiston, mutta varmistetaan
                     new MySqlCommand($"DELETE FROM Laskurivi WHERE lasku_id={id}", conn).ExecuteNonQuery();
                     new MySqlCommand($"DELETE FROM Lasku WHERE LaskunNumero={id}", conn).ExecuteNonQuery();
                     return true;
@@ -528,6 +535,16 @@ namespace Harjoitustyö
                                 tCmd.ExecuteNonQuery();
 
                                 rivi.Tuote_ID = (int)tCmd.LastInsertedId;
+
+                                Tuote uusiTuote = new Tuote
+                                {
+                                    Tuote_ID = (int)tCmd.LastInsertedId,
+                                    Nimi = rivi.Nimi,
+                                    Yksikkö = rivi.Yksikkö,
+                                    A_Hinta = rivi.A_Hinta,
+                                    ALV = rivi.ALV
+                                };
+                                Uusi_Lasku.VarastoTuotteet.Add(uusiTuote);
                             }
                         }
 

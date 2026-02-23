@@ -178,7 +178,6 @@ namespace Harjoitustyö
         {
             if (Newlasku != null && Newlasku.Tuotteet != null)
             {
-                // Lasketaan summa käyttämällä Models.cs:n logiikkaa
                 Total.Text = $"{Newlasku.Yhteensä:C2}";
             }
         }
@@ -190,12 +189,16 @@ namespace Harjoitustyö
             Dispatcher.BeginInvoke(new Action(() => { PäivitäSumma(); }));
         }
 
+        // Poista-rivin klikkaus tapahtuma, joka poistaa kyseisen tuoterivin laskusta ja päivittää summan. Kutsutaan Poista-painikkeen Click-tapahtumassa DataGridissä.
         private void PoistaRivi_Click(object sender, RoutedEventArgs e)
         {
             if (sender is Button button && button.DataContext is Laskurivi poistettavaRivi)
             {
+                // Suljetaan mahdollinen editointi, jotta poistettava rivi ei ole enää muokkaustilassa. estää viimeísen rivin poistamisen.
                 TuotteetGrid.CancelEdit();
                 TuotteetGrid.CommitEdit();
+
+                // Poistetaan rivi laskusta
                 Newlasku.Tuotteet.Remove(poistettavaRivi);
                 PäivitäSumma();
             }
