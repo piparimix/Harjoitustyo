@@ -26,7 +26,7 @@ Pakolliset kentät: Tuotteen nimi, Määrä, Yksikkö, Hinta.
 MAX pituude: Tuotteen nimi 50 merkkiä, Määrä 6 numeroa, Hinta 6 numeroa.
 
 
-- Buttons: Peruuta, Tallenna, Tallenna ja TulostaPDF
+- Buttons: Peruuta, Tallenna, Tallenna ja TulostaPDF, Poista rivi(Button datagridissä)
 Tulostaessa PDF:ksi, PDF-tiedoston nimi on muotoa "Lasku_[Laskun numero].pdf". PDF-tiedosto tallennetaan sovelluksen juuri kansiossa olevaan kansioon "Laskut".
 
 

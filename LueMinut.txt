@@ -2,7 +2,7 @@
 
 tietokantayhteydet on määritelty App.config tiedostossa. 
 
-ja niitä käytetään Tietokanta.cs tiedostossa.
+ja niitä käytetään vain Tietokanta.cs tiedostossa.
 
 b.
 Muuta Root salasana App.config tiedostossa 
@@ -11,7 +11,7 @@ vastaamaan oman MySQL palvelimesi salasanaa ennen sovelluksen käynnistämistä.
 sovellus käyttää nuget paketteja:
 nimi			versio
 BarcodeLib		3.1.5 
-MySql.Data		9.5.0 
-QuestPDF		2025.12.3
+MySql.Data		9.5.0 / paketista on uusi versio saatavilla, mutta käytetään tätä versiota, koska se on testattu sovelluksen kanssa ja toimii.
+QuestPDF		2025.12.3 / Paketista on uudenpi versio saatavilla, mutta käytetään tätä versiota, koska se on testattu sovelluksen kanssa ja toimii.
 
 visual studion pitäisi ladata nämä paketit automaattisesti kun sovelluksen käynnistää.
