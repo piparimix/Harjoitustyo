@@ -438,6 +438,8 @@ namespace Harjoitustyö
                 cmd.ExecuteNonQuery();
             }
         }
+
+        // Poistaa tuotteen tietokannasta. Jos tuotetta on käytetty laskurivillä, rivin tuote_id asetetaan NULLiksi, mutta rivi säilyy.
         public static void PoistaTuote(int id)
         {
             using (MySqlConnection conn = new MySqlConnection(ConnectionString))
@@ -483,6 +485,8 @@ namespace Harjoitustyö
             }
             return null;
         }
+
+        // Päivittää laskun tietokantaan. Käytännössä päivitetään laskun perustiedot ja korvataan vanhat rivit uusilla. Tämä on helpompaa kuin yrittää vertailla vanhoja ja uusia rivejä keskenään.
         public static bool PaivitaLasku(Lasku lasku)
         {
             using (MySqlConnection conn = new MySqlConnection(ConnectionString))
@@ -512,7 +516,6 @@ namespace Harjoitustyö
 
                     foreach (var rivi in lasku.Tuotteet)
                     {
-                        // --- UUSI LOGIIKKA ALKAA ---
                         if (rivi.Tuote_ID == 0 && !string.IsNullOrWhiteSpace(rivi.Nimi))
                         {
                             string insertTuoteSql = "INSERT INTO Tuote (nimi, määrä, yksikkö, a_hinta, alv) VALUES (@tn, 0, @ty, @th, @ta)";
@@ -527,7 +530,6 @@ namespace Harjoitustyö
                                 rivi.Tuote_ID = (int)tCmd.LastInsertedId;
                             }
                         }
-                        // --- UUSI LOGIIKKA PÄÄTTYY ---
 
                         MySqlCommand rCmd = new MySqlCommand(rowSql, conn);
                         rCmd.Parameters.AddWithValue("@lid", lasku.LaskunNumero);
